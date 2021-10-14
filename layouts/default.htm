@@ -1,5 +1,14 @@
 description = "Default layout"
 
+[googleTracker]
+
+[cookieConsent]
+message = "This website uses cookies to ensure you get the best experience on our website."
+dismiss = "Got it!"
+learnMore = "More info"
+link = "/privacy-policy"
+theme = "light-bottom"
+
 ==
 <!DOCTYPE html>
 <html>
@@ -28,6 +37,7 @@ description = "Default layout"
 </head>
 
 <body>
+	{% component 'cookieConsent' %}
 	<div class="content-wrapper {{this.page.id}}">
 		<div id="fb-root"></div>
 		<!-- Header -->
@@ -43,6 +53,7 @@ description = "Default layout"
 		<!-- Content -->
 		<section id="layout-content" class="{{this.page.id}}">
 			{% page %}
+			{% component 'googleTracker' %}
 		</section>
 	</div>
 
