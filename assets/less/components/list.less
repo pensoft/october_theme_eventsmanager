@@ -1,0 +1,114 @@
+.list {
+    width: 100%;
+    background-color: white;
+    
+    &.border {
+        &>.list-item {
+            .border(1px)
+        }
+        .list-item + .list-item {
+            border-top-width: 0 !important;
+        }
+        
+    }
+
+    .list-item {
+        display: flex;
+        width: 100%;
+        flex-direction: column;
+        box-sizing: border-box;
+        text-align: left;
+        align-items: center;
+        justify-content: flex-start;
+        text-decoration: none;
+        padding-top: 40px;
+        padding-bottom: 40px;
+        padding-left:10px;
+        padding-right:10px;
+        font-size: 16px;
+        .breakpoint-small-down ({
+          padding-top:0px;
+          padding-bottom:0px;
+          width: auto;
+        });
+        
+        &.no-gutter {
+          padding: 0;
+        }
+
+        .gutter-right {
+            margin-right: 10px;
+        }
+        
+        .list-item-image {
+            min-width: 280px;
+            min-height:100px;
+            background-position:left;
+            background-size:contain;
+            background-repeat: no-repeat;
+            .breakpoint-small-down({
+              background-position:left;
+            });
+            &.contain {
+                background-size: contain;
+              .breakpoint-small-down({
+                background-size: auto!important;
+              });
+            }
+        }
+        .list-item-column {
+          display:flex;
+          flex-direction:column;
+          flex-grow:1;
+          width: 100%;
+        }
+       
+        .list-item-text {
+            flex: 1 1 auto;
+            padding:10px;
+        }
+
+      .info{
+        display: none;
+      }
+      h3{
+        font-weight: bold;
+        font-size: 23px;
+        margin: 20px 0;
+        a{
+          color: @default-color;
+        }
+      }
+      .btn-primary{
+        width: auto;
+        padding: 5px;
+        width: fit-content;
+      }
+    }
+
+    .breakpoint-large-down ({
+        .list-item {
+            flex-direction: column;
+
+            .gutter-right {
+                margin-left: 0;
+            }
+            .list-item-image {
+                flex-basis: 33%;
+                min-width: 100%;
+                min-height:100px;
+                background-position:left;
+                background-size:cover;
+                background-repeat: no-repeat;
+                .breakpoint-small-down({
+                  background-position:left;
+                });
+                &.contain {
+                    background-size: contain;
+                }
+            }
+        }
+        
+    });
+}
+

@@ -1,0 +1,51 @@
+.ui.form {
+    .field + .field {
+        margin-top: 1rem;
+    }
+
+    .field {
+        //display: flex;
+        //flex-direction: column;
+        width: 100%;
+        &.inline {
+            flex-direction: row;
+            width: auto;
+            input, textarea {
+                width: auto;
+            }
+        }
+        & > label {
+            display: block;
+            margin: 0 0 .3rem 0;
+        }
+        & > input, textarea, select {
+          display: block;
+          width: 100%;
+          font-size: 18px;
+          color: #1b282e;
+          background-color: #ffffff;
+          box-sizing: border-box;
+          padding: .7rem 1rem;
+          line-height: 1.7em;
+          border-radius: 5px 5px 5px 5px;
+          -moz-border-radius: 5px 5px 5px 5px;
+          -webkit-border-radius: 5px 5px 5px 5px;
+          border: 0px solid #dddddd;
+          border-right-width: 15px;
+          border-right-color: white;
+          box-shadow: 0 0 0 1px #dddddd;
+
+            &:focus {
+                outline: none;
+            }
+        }
+
+
+    }
+
+  .btn-primary{
+    padding: 10px 20px;
+    margin-top: 30px;
+  }
+    
+}

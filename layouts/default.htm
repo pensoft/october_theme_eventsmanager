@@ -1,0 +1,51 @@
+description = "Default layout"
+
+==
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    {% if this.theme.site_icon %}
+    <link rel="icon" type="{{this.theme.site_icon.getContentType()}}" href="{{this.theme.site_icon.getPath()}}">
+    {% endif %}
+
+    <link href="{{ ['assets/less/theme.less']|theme }}" rel="stylesheet">
+    <link href="{{ ['assets/css/scale.css']|theme }}" rel="stylesheet">
+    <link href="{{ ['assets/css/light.css']|theme }}" rel="stylesheet">
+    <script src="{{ 'assets/js/jquery.js'|theme }}"></script>
+    <script src="{{ 'assets/js/app.js'|theme }}"></script>
+    <script src="{{ 'assets/js/jquery-ui.js'|theme }}"></script>
+    <script src="{{ 'assets/vendor/bootstrap/js/modal.js'|theme  }}"></script>
+    <script type="text/javascript" src="{{ 'assets/js/slick.min.js'|theme }}"></script>
+	<script src="{{ 'assets/js/ckeditor/ckeditor.js'|theme}}"></script>
+
+    {% framework extras %}
+	{% styles %}
+    {% scripts %}
+</head>
+
+<body>
+	<div class="content-wrapper {{this.page.id}}">
+		<div id="fb-root"></div>
+		<!-- Header -->
+		<header id="layout-header">
+			{% partial 'site/header'
+				site_name=this.theme.site_name
+				tag_line=this.theme.tag_line
+				page_title=this.page.title
+				page_id=this.page.id
+			%}
+		</header>
+
+		<!-- Content -->
+		<section id="layout-content" class="{{this.page.id}}">
+			{% page %}
+		</section>
+	</div>
+
+</body>
+
+</html>

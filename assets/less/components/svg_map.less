@@ -1,0 +1,33 @@
+/**
+	SVG map
+*/
+
+.st1:hover,
+.st2:hover,
+.st3:hover,
+.st4:hover
+{
+  opacity:0.5;
+  cursor:pointer;
+}
+
+.tooltiptext {
+  display: none;
+  width: auto;
+  color: @default-color;
+  text-align: center;
+  border-radius: 5px;
+  position: fixed;
+  z-index: 1;
+  padding: 10px 15px;
+  background: @white-color;
+  -moz-box-shadow: 0 0 20px #0000001A;
+  -webkit-box-shadow: 0 0 20px #0000001A;
+  box-shadow: 0 0 20px #0000001A;
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+.tooltiptext.active {
+  display: initial;
+}

@@ -1,0 +1,48 @@
+.jumbotron {
+    position: absolute;
+    z-index: 100;
+
+    .breakpoint-large-down({
+        padding-top: 95px;
+    });
+}
+
+.jumbotron p{
+  color: #ffffff!important;
+}
+
+.jumbotron-subtitle{
+  font-size: 27px;
+  font-weight: 600;
+  line-height: 1.5em;
+  span{
+    color: @jumbotron-h1-color;
+    -webkit-text-fill-color: @jumbotron-h1-color; /* Will override color (regardless of order) */
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: @secondary-color;
+  }
+}
+
+
+
+.homepage-jumbotron-background{
+  background-size: 50%;
+
+  .breakpoint-small-down({
+    background-size: 100%;
+  });
+
+  h1.display-1{
+    color: @jumbotron-h1-color;
+    -webkit-text-fill-color: @jumbotron-h1-color; /* Will override color (regardless of order) */
+    -webkit-text-stroke-width: 2px;
+    -webkit-text-stroke-color: @secondary-color;
+    font-size: 57px;
+    line-height: 57px;
+    font-weight: 900;
+    .breakpoint-laptop-down({
+      margin-top: 74px;
+      margin-bottom: 0;
+    });
+  }
+}

@@ -1,0 +1,135 @@
+.fc-toolbar {
+    flex-direction: column;
+}
+.breakpoint-large({
+    .fc-toolbar {
+        flex-direction: row;
+    }
+});
+
+.fc-button-primary:disabled{
+  visibility: hidden;
+}
+
+.fc-button-group > .fc-button, .fc-button-group > .fc-button:not(:first-child){
+  background: #212121!important;
+  color: @white-color!important;
+  border-radius: 30px!important;
+  border: none;
+}
+
+.fc-button-group > .fc-today-button, .fc-button-group > fc-prev-button{
+  border-radius: 50%;
+}
+
+.fc-button-group > .fc-button:hover, .fc-button-group > .fc-button:not(:first-child):hover, .fc-button-primary:not(:disabled).fc-button-active{
+  background: @white-color!important;
+  color: #212121!important;
+  border: 1px solid #212121!important;
+}
+
+.fc-toolbar.fc-header-toolbar{
+  display: flex;
+}
+
+.fc-left{
+  order: 2;
+  position: absolute;
+  margin-left: 353px;
+  .breakpoint-small-down({
+    order: 1;
+    position: unset;
+    margin-left: 0px;
+  });
+}
+
+.fc-center{
+  order: 1;
+}
+
+.fc-right{
+  order: 3;
+}
+
+.fc-left .fc-button{
+  padding: 6px;
+  margin: 0 10px;
+}
+
+.fc-right .fc-button{
+  padding: 5px 6px;
+  margin: 0 10px;
+  width: 80px;
+}
+
+.fc-right .fc-button:last-of-type{
+  margin: 0 0 0 10px;
+}
+
+.fc-event{
+  background: #74be45!important;
+  border-color: #74be45!important;
+  padding: 10px!important;
+}
+
+.fc-day-grid-event .fc-time{
+  display: none;
+}
+
+//.fc-event-container{
+//  position: relative;
+//  a:hover{
+//    width: fit-content;
+//    position: absolute;
+//    z-index: 5555;
+//  }
+//}
+
+//.fc-event-container{
+//  background: #E2E2E2 !important;
+//  height: 100% !important;
+//  position: absolute;
+//  padding: 14px 15px 45px 0!important;
+//  margin-top: -31px;
+//}
+
+.fc-unthemed th, .fc-unthemed td, .fc-unthemed thead, .fc-unthemed tbody, .fc-unthemed .fc-divider, .fc-unthemed .fc-row, .fc-unthemed .fc-content, .fc-unthemed .fc-popover, .fc-unthemed .fc-list-view, .fc-unthemed .fc-list-heading td{
+  //border: none!important;
+}
+
+#calendar{
+  border: none;
+  border-radius: 5px;
+  padding: 20px!important;
+  margin: 20px 0;
+  font-size: 1em;
+  cursor: pointer;
+  background: @white-color;
+  -moz-box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  -webkit-box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+//tr:first-child > td > .fc-day-grid-event {
+//  margin-top: 18px!important;
+//  width: 98%;
+//  border-radius: 5px;
+//}
+//
+//.fc-day-number{
+//  z-index: 2!important;
+//}
+
+
+.entry_list_item{
+  border: none;
+  border-radius: 5px;
+  padding: 20px!important;
+  margin: 20px 0 20px 20px;
+  font-size: 1em;
+  cursor: pointer;
+  background: @white-color;
+  -moz-box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  -webkit-box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}

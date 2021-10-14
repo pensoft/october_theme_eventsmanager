@@ -1,0 +1,204 @@
+.container {
+    max-width: 100%;
+    //padding-right: 0.5rem;
+    //padding-left: 0.5rem;
+    padding-top: @padding-base-space-home * 2.5;
+    padding-bottom: @padding-base-space-home * 2.5;
+    margin-right: auto;
+    margin-left: auto;
+
+    .breakpoint-small({
+        max-width: 540px;
+    });
+    .breakpoint-medium({
+        max-width: 720px;
+    });
+    .breakpoint-large({
+        max-width: 960px;
+    });
+    .breakpoint-huge({
+        //max-width: 1262px;
+        max-width: 1210px;
+    });
+    &.highlights-news{
+        padding-bottom: unset;
+    }
+}
+
+.container-fluid {
+    width: 100%;
+    max-width: 100vw;
+}
+
+.fixed-top,.fixed-bottom,.fixed-right,.fixed-left {
+    position: fixed;
+}
+.fixed-top {
+    top: 0;
+    left: 0;
+    right: 0;
+}
+.fixed-bottom {
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+.fixed-right {
+    top: 0;
+    bottom: 0;
+    left: 0;
+}
+.fixed-left {
+    top: 0;
+    bottom: 0;
+    right: 0;
+}
+.row + .row {
+    //margin-top: 1.5rem;
+}
+.border-box {
+    box-sizing: border-box;
+}
+
+// Positions
+
+.relative {
+    position: relative;
+}
+.absolute {
+    position: absolute;
+}
+.fixed {
+    position: fixed;
+}
+.sticky {
+    position: sticky;
+}
+.static {
+    position: static;
+}
+.show {
+    display: block;
+}
+.hide {
+    display: none;
+}
+
+
+.about{
+  .container-fluid{
+    background: url(../../assets/images/Bacteria/mobile-bacteria-06.svg) right no-repeat;
+    background-size: 26%;
+    background-position-y: 66px;
+    .breakpoint-small-down({
+      background-size: 37%;
+      background-position-y: 108px;
+    });
+    .container p{
+      width: 80%;
+      .breakpoint-small-down({
+        width: 100%;
+      });
+    }
+  }
+
+  .container{
+    .breakpoint-small-down({
+      margin: 0 1rem;
+      width: 90%;
+    });
+  }
+
+  .work_packages{
+    .container{
+      .breakpoint-small-down({
+        margin: 0 0.5rem;
+        width: 95%;
+      });
+    }
+  }
+}
+
+.insider{
+
+  .dorsal{
+    display: none;
+  }
+  .toogle-contact-paragraphs{
+    display: block;
+  }
+
+  h3.card-header{
+    margin-bottom: 20px!important;
+  }
+}
+
+.partners h1, .news h1, .media-center h1, .logo h1, .flyer h1, .newsletters h1, .videos h1, .press-releases h1{
+  .breakpoint-small-down({
+    margin-left: 1rem;
+  });
+}
+.partners svg{
+  width: 90% !important;
+  float: right!important;
+}
+
+.partners .container .row.list-item{
+
+  .breakpoint-small-down({
+    -ms-box-orient: horizontal;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -moz-flex;
+    display: -webkit-flex;
+    display: flex;
+
+    -webkit-flex-flow: row wrap;
+    flex-flow: row wrap;
+  margin-bottom: 40px;
+  });
+
+  .col-sm-6.col-xs-12:first-of-type{
+    .breakpoint-small-down({
+      order: 2;
+    });
+  }
+  .col-sm-6.col-xs-12:last-of-type{
+    .breakpoint-small-down({
+      order: 1;
+    });
+  }
+
+
+}
+
+
+ol.blue_bullets {
+  max-width: 50%;
+  counter-reset: my-awesome-counter;
+  list-style: none;
+  padding-left: 50px;
+  .breakpoint-small-down({
+    max-width: 100%;
+  });
+  li {
+    margin: 0 0 0.5rem 0;
+    counter-increment: my-awesome-counter;
+    position: relative;
+    margin: 40px 0;
+  }
+  li::before {
+    content: counter(my-awesome-counter);
+    font-size: 1.5rem;
+    font-weight: bold;
+    position: absolute;
+    left: calc(-1 * 40px - 10px);
+    line-height: 40px;
+    width: 40px;
+    height: 40px;
+    top: 0;
+    background: url(../../assets/images/Icons/tl.svg) no-repeat;
+    text-align: center;
+  }
+}
