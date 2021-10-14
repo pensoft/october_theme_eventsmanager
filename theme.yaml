@@ -1,43 +1,16 @@
-name: "Promicon"
+name: "Events Manager"
 author: "Pensoft"
 homepage: "https://pensoft.net"
-code: "Pensoft-Promicon"
+code: "Pensoft-Eventsmanager"
 authorCode: "Pensoft"
 description: "Demonstrates the basic concepts of the front-end theming."
 previewImage: "assets/images/preview.png"
 require:
     - rainlab.builder
-    - rainlab.googleanalytics
     - rainlab.location
-    - rainlab.pages
-    - rainlab.sitemap
-    - rainlab.translate
-    - rainlab.user
-    - AnandPatel.SeoExtension
-    - RainLab.Sitemap
-    - abwebdevelopers.imageresize
-    - anandpatel.seoextension
-    - benfreke.menumanager
-    - bennothommo.meta
     - offline.gdpr
-    - offline.sitesearch
-    - panakour.translate
-    - pikanji.agent
-    - suresoftware.powerseo
-    - vojtasvoboda.twigextensions
-    - zakir.imagecropper
-    - pensoft.accordions
-    - pensoft.articles
-    - pensoft.cardprofiles
-    - pensoft.jumbotron
-    - pensoft.library
-    - pensoft.links
-    - pensoft.maintenance
-    - pensoft.media
-    - pensoft.pageextension
-    - pensoft.partners
-    - pensoft.searchextension
-    - pensoft.internaldocuments
+    - pensoft.calendar
+    - pensoft.eventsextension
 form:
     tabs:
         defaultTab: 'General settings'
