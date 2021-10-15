@@ -62,10 +62,9 @@ $this['slug'] = $this->param('slug');
 		<div class="col-xs-12">
 			<h1>{{ entry.title }}</h1>
 			<div class="text-published mt-2">
-				{{entry.event_date}}
-				{% if entry.place %}
-					, <b>{{ entry.place }}</b>
-				{% endif %}
+				{{entry.event_date|trim}}{% if entry.online_event %}, <b>Online event</b>
+				{% else %}{% if entry.place %}, <b>{{ entry.place }}</b>{% endif %}{% endif %}
+
 			</div>
 		</div>
 		<div class="col-xs-12">
