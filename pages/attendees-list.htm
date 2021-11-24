@@ -4,6 +4,20 @@ title = "Attendees list"
 
 [AttendeesList]
 ==
+
+<?php
+
+function onStart(){
+	$loggedIn = !empty(\BackendAuth::getUser()) ? true : false;
+
+
+	if (!$loggedIn) {
+		return Redirect::to('/');
+	}
+
+}
+?>
+==
 <div class="container">
     {% component 'AttendeesList' %}
 </div>
