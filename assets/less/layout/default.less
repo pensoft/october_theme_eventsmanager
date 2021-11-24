@@ -25,6 +25,35 @@
     }
 }
 
+.attendees-list{
+  .container {
+    max-width: 100%;
+    //padding-right: 0.5rem;
+    //padding-left: 0.5rem;
+    padding-top: @padding-base-space-home * 2.5;
+    padding-bottom: @padding-base-space-home * 2.5;
+    margin-right: auto;
+    margin-left: auto;
+
+    .breakpoint-small({
+      max-width: 540px;
+    });
+    .breakpoint-medium({
+      max-width: 720px;
+    });
+    .breakpoint-large({
+      max-width: 960px;
+    });
+    .breakpoint-huge({
+      //max-width: 1262px;
+      max-width: 1600px;
+    });
+    &.highlights-news{
+      padding-bottom: unset;
+    }
+  }
+}
+
 .container-fluid {
     width: 100%;
     max-width: 100vw;
