@@ -11,10 +11,7 @@ html,body {
 }
 
 .content-wrapper {
-  min-height: calc(100vh - 547px);
-  .breakpoint-small-down({
-    min-height: 100%;
-  });
+  height: 100%!important;
 }
 
 a {
@@ -24,8 +21,16 @@ a {
     .text-link;
 }
 
+img{
+  .breakpoint-small-down({
+    max-width: 100%;
+    padding: 0 10px;
+  });
+}
+
 .required{
   color: red;
+  margin-left: 6px;
 }
 
 .error{
@@ -148,7 +153,9 @@ ol.q {list-style-type: upper-roman; padding-left: 20px;}
     padding-top: @padding-base-space * 0;
     padding-bottom: @padding-base-space * 0;
     margin-top: 78px;
-
+    height: 100%!important;
+    background: url(../../../../storage/app/media/aaa1.jpg) no-repeat center;
+    background-size: contain!important;
     .breakpoint-small-down ({
       margin-top: 64px;
         .slick-next, .slick-prev {
@@ -467,6 +474,14 @@ footer .align-items-center{
   }
 }
 
+h1{
+  .breakpoint-small-down({
+    font-size: 26px;
+    line-height: 1.5em;
+    padding: 0 20px;
+  });
+
+}
 
 h1.display-1{
   font-size: 57px;
@@ -507,4 +522,87 @@ h2{
   .breakpoint-small-down({
     background-size: 100%;
   });
+}
+
+
+
+/*
+Generic Styling, for Desktops/Laptops
+*/
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Zebra striping */
+tr:first-of-type {
+  background: #74be45!important;
+  color: white;
+  font-weight: bold;
+  position: sticky;
+  top: 76px;
+  a{
+    color: blue;
+  }
+}
+/* Zebra striping */
+tr:nth-of-type(odd) {
+  background: #eee;
+}
+th {
+  background: #333;
+  color: white;
+  font-weight: bold;
+}
+td, th {
+  padding: 6px;
+  border: 1px solid #ccc;
+  text-align: left;
+}
+
+
+/*
+This query will take effect for any screen smaller than 760px
+and also iPads specifically.
+*/
+@media
+only screen and (max-width: 760px),
+(min-device-width: 768px) and (max-device-width: 1024px)  {
+
+  /* Force table to not be like tables anymore */
+  table, thead, tbody, th, td, tr {
+    display: block;
+    table-layout:fixed;
+  }
+
+  /* Hide table headers (but not display: none;, for accessibility) */
+  thead tr {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+  }
+
+  tr { border: 1px solid #ccc; }
+
+  td {
+    /* Behave  like a "row" */
+    border: none;
+    border-bottom: 1px solid #eee;
+    position: relative;
+    padding-left: 50%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-wrap: break-word;
+  }
+
+  td:before {
+    /* Now like a table header */
+    position: absolute;
+    /* Top/left values mimic padding */
+    top: 6px;
+    left: 6px;
+    width: 45%;
+    padding-right: 10px;
+    white-space: nowrap;
+  }
 }

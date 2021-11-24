@@ -13,11 +13,13 @@ language = "en"
 ==
 <?php
 use Pensoft\Calendar\Models\Entry;
+use Backend\Facades\BackendAuth;
 use Carbon\Carbon;
 
 function onStart(){
 
     if($this->param('slug')){
+$this['loggedIn'] = !empty(BackendAuth::getUser()) ? true : false;
 $this['entry'] =  Entry::select(
 '*',
 'title',
@@ -62,11 +64,9 @@ $this['slug'] = $this->param('slug');
 		<div class="col-xs-12">
 			<h1>{{ entry.title }}</h1>
 			<div class="text-published mt-2">
-				{{entry.event_date}}
-				{{entry.event_time}}
-				{% if entry.place %}
-					, <b>{{ entry.place }}</b>
-				{% endif %}
+				{{entry.event_date|trim}}{% if entry.online_event %}, <b>Online event</b>
+				{% else %}{% if entry.place %}, <b>{{ entry.place }}</b>{% endif %}{% endif %}
+
 			</div>
 		</div>
 		<div class="col-xs-12">
@@ -90,6 +90,9 @@ $this['slug'] = $this->param('slug');
 					<a class="mt-2 button" href="{{ entry.url }}" target="_blank">{{ 'To the event'|_ }}</a>
 					{% endif %}
 					<div class="register mt-2"><a href="{{ 'event-register' | page}}/{{entry.id}}" class="btn btn-primary">Register</a> </div>
+					{% if loggedIn %}
+						<div class="register mt-2"><a href="{{ 'attendees-list' | page}}/{{entry.id}}" class="btn btn-primary btn-danger">Attendees</a> </div>
+					{% endif %}
 				</div>
 			</div>
 		</div>
