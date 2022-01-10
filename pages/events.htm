@@ -10,8 +10,12 @@ default = "true"
 limit = 10
 category = "null"
 language = "en"
+redirect_to_detailed_page = "false"
 
 [EventsList]
+
+[session]
+security = "all"
 ==
 <?php
 use Pensoft\Calendar\Models\Entry;
@@ -62,6 +66,16 @@ $this['slug'] = $this->param('slug');
 	{% endif %}
 
 	{% if entry %}
+
+		{% set userHasAccessFlag = false %}
+		{% if user %}
+			{% for event in user.events %}
+				{% if entry.id == event.id  %}
+					{% set userHasAccessFlag = true %}
+				{% endif %}
+			{% endfor %}
+		{% endif %}
+
 	<div class="fr-view row">
 		<div class="col-xs-12">
 			<h1>{{ entry.title }}</h1>
@@ -92,16 +106,16 @@ $this['slug'] = $this->param('slug');
 					<a class="mt-2 button" href="{{ entry.url }}" target="_blank">{{ 'To the event'|_ }}</a>
 					{% endif %}
 					<div class="register mt-2"><a href="{{ 'event-register' | page}}/{{entry.id}}" class="btn btn-primary">Register</a> </div>
-					{% if loggedIn %}
+
 					<div class="row middle-xs">
-						<div class="register mt-2 col-xs-2"><a href="{{ 'attendees-list' | page}}/{{entry.id}}" class="btn btn-primary btn-danger">Attendees</a> </div>
-						<div class="register mt-2 col-xs-2"><a href="javascript:void(0);"
+						{% if loggedIn or userHasAccessFlag %}<div class="register mt-2 col-xs-2"><a href="{{ 'attendees-list' | page}}/{{entry.id}}" class="btn btn-primary btn-danger">Attendees</a> </div>{% endif %}
+						{% if loggedIn %}<div class="register mt-2 col-xs-2"><a href="javascript:void(0);"
 															   data-request="EventsList::onDuplicateEvent"
 															   data-request-confirm="Do you wanna duplicate this event?"
 															   data-request-data="event_id: {{entry.id}}"
-															   class="btn btn-primary btn-info">Duplicate</a></div>
+															   class="btn btn-primary btn-info">Duplicate</a></div>{% endif %}
 					</div>
-					{% endif %}
+
 				</div>
 			</div>
 		</div>

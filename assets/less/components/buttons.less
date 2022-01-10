@@ -90,12 +90,16 @@ button:not(:disabled) {
     box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
 }
 
-.btn-primary {
+.btn-primary, .btn-default {
     color: @white-color;
     background-color: @button-background-color;
     border-color: @button-background-color;
     .rounded(5px);
   white-space: nowrap;
+}
+
+.btn-default{
+  margin-top: 20px;
 }
 
 .btn-primary:hover {

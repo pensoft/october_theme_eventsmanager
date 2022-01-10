@@ -3,20 +3,9 @@ layout = "default"
 title = "Attendees list"
 
 [AttendeesList]
-==
 
-<?php
-
-function onStart(){
-	$loggedIn = !empty(\BackendAuth::getUser()) ? true : false;
-
-
-	if (!$loggedIn) {
-		return Redirect::to('/');
-	}
-
-}
-?>
+[session]
+security = "all"
 ==
 <div class="container">
     {% component 'AttendeesList' %}
