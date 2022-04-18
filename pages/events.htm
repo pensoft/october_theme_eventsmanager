@@ -49,11 +49,13 @@ DB::raw("
 
 $this['slug'] = $this->param('slug');
 
+
 $this['tdwg_id'] = env('TDWG_ID');
 
 }
 ?>
 ==
+
 <div class="container">
 
 	{% if not slug %}
