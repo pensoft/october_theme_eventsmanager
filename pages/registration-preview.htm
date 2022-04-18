@@ -9,6 +9,9 @@ use Pensoft\Tdwgform\Models\Data;
 use RainLab\Location\Models\Country;
 use Pensoft\Tdwgform\Models\DiscountOptions;
 use Pensoft\Tdwgform\Models\Codes;
+
+use Carbon\Carbon;
+
 function onStart()
 {
 	$id = (int)$this->param('registration_id');
@@ -25,7 +28,7 @@ function onStart()
 		$ticket = DiscountOptions::where('id', (int)$data->discount_option_id)->first()->toArray();
 		$this['ticket_amaount'] = $amount = ($data->type == 'virtual') ? $ticket['amount_virtual'] :  $ticket['amount'];
 		$this['ticket_type'] = $ticket['name'];
-		$ap = (int)$data->accompanying_person ? 120 : 0;
+		$ap = (int)$data->accompanying_person ? 135 : 0;
 		$help = (int)$data->help_others ? 25 : 0;
 
 
@@ -38,14 +41,19 @@ function onStart()
 			$codeData = Codes::where('code', $data->discount_code)->where('is_used', false)->first();
 			if($codeData){
 				if($codeData->type == '%'){
-					$discount = ((int)$codeData->value / 100) * $amount;
+					$discount += ((int)$codeData->value / 100) * $amount;
 				}else{
-					$discount = (int)$codeData->value;
+					$discount += (int)$codeData->value;
 				}
 			}else{
 				$discount = 0;
 			}
 		}
+		if( $data->type == 'physical' && (int)$data->discount_option_id == 1 && Carbon::now() <=  env('EARLY_BOOKING_DATE')){
+			$this['early'] = 'Early Registration Discount is applied';
+			$discount += 50;
+		}
+
 
 		$this['total'] = $total - $discount;
 		$this['discount'] = $discount;
@@ -157,24 +165,29 @@ function onStart()
 			<div class="row">
 				<div class="col-md-6 col-xs-12">
 					<b>Ticket type:</b>
-					<span class="text-light">{{ticket_type}} - {{ticket_amaount}} &euro;</span>
+					<span class="text-light">{{ticket_type}}, {{ticket_amaount}} &euro;</span>
 				</div>
 				{% if data.discount_code %}
-				<div class="col-md-3 col-xs-12">
+				<div class="col-md-6 col-xs-12">
 					<b>Members code:</b>
 					<span class="text-light">{{data.discount_code}}</span>
 				</div>
-				<div class="col-md-3 col-xs-12">
-					<b>Discount:</b>
-					<span class="text-light">{{discount}} &euro;</span>
-				</div>
 				{% endif %}
 			</div>
+			{% if discount %}
+			<div class="row">
+				<div class="col-md-12 col-xs-12">
+					<b>Discount:</b>
+					<span class="text-light">-{{discount}} &euro;</span>
+					<br><em>{{early}}</em>
+				</div>
+			</div>
+			{% endif %}
 			{% if data.accompanying_person %}
 			<div class="row">
 				<div class="col-md-12 col-xs-12">
 					<b>Accompanying person:</b>
-					<span class="text-light">{% if data.accompanying_person_name %}{{data.accompanying_person_name}}, {% else %}Yes -{% endif %} 120 &euro;</span>
+					<span class="text-light">{% if data.accompanying_person_name %}{{data.accompanying_person_name}}, {% else %}Yes -{% endif %} 135 &euro;</span>
 				</div>
 			</div>
 		   	{% endif %}
@@ -189,7 +202,7 @@ function onStart()
 			{% if data.help_others %}
 			<div class="row">
 				<div class="col-md-12 col-xs-12">
-					<b>I want to help by donating funds to be used to help cover registrations for others who need support. - 25 &euro;:</b>
+					<b>I want to donate funds for those who need support for registration. - 25 &euro;:</b>
 					<span class="text-light">Yes</span>
 				</div>
 			</div>
@@ -236,7 +249,11 @@ function onStart()
 					<a href="/event-register/{{tdwg_id}}/{{data.id}}" class="btn btn-primary">Back</a>
 						&nbsp;
 					{% if total > 0 %}
-						<a href="javascript:void(0);" onclick="proccedToPayment({{data.id}});" class="btn btn-primary">Proceed to payment {{total}} &euro;</a>
+						{% if data.invoice_email %}
+							<a href="javascript:void(0);" onclick="proccedToPayment({{data.id}});" class="btn btn-primary">Finish registraion and add {{total}} &euro; to an extra invoice</a>
+						{% else %}
+							<a href="javascript:void(0);" onclick="proccedToPayment({{data.id}});" class="btn btn-primary">Proceed to payment {{total}} &euro;</a>
+						{% endif %}
 					{% else %}
 						<a href="javascript:void(0);" onclick="finishRegistration({{data.id}});" class="btn btn-primary">Finish registration</a>
 					{% endif %}
