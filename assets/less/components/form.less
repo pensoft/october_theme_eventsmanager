@@ -12,6 +12,10 @@
       height: unset!important;
     }
 
+    .field select{
+      padding: 1rem 1rem .9rem 1rem!important;
+    }
+
     .field, .form-group {
         //display: flex;
         //flex-direction: column;
@@ -63,4 +67,92 @@
     margin-top: 30px;
   }
     
+}
+
+#tdwg{
+  .field:first-of-type{
+    margin-top: 2rem;
+  }
+
+  .row .col-xs-12, .row .col-xs-11, .row .col-xs-10, .row .col-xs-9, .row .col-xs-8, .row .col-xs-7, .row .col-xs-6, .row .col-xs-5, .row .col-xs-4, .row .col-xs-3, .row .col-xs-2, .row .col-xs-1{
+
+    margin-left: unset!important;
+    margin-right: unset!important;
+    padding-left: 0.5rem!important;
+    padding-right: 0.5rem!important;
+  }
+
+  .ui.form .field select{
+    padding: 0.7rem 1rem;
+    line-height: 2em!important;
+  }
+
+  .switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+  }
+
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+
+  input:checked + .slider {
+    background-color: #74be45;
+  }
+
+  input:focus + .slider {
+    box-shadow: 0 0 1px #74be45;
+  }
+
+  input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+  }
+
+  /* Rounded sliders */
+  .slider.round {
+    border-radius: 34px;
+  }
+
+  .slider.round:before {
+    border-radius: 50%;
+  }
+
+  .discount_code_success_message{
+    color: green;
+  }
+
+  .discount_code_err_message{
+    color: red;
+  }
+
 }

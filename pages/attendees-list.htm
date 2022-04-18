@@ -7,6 +7,156 @@ title = "Attendees list"
 [session]
 security = "all"
 ==
+
+<?php
+
+use Pensoft\Tdwgform\Models\Data;
+use RainLab\Location\Models\Country;
+use Pensoft\Tdwgform\Models\DiscountOptions;
+use Pensoft\Tdwgform\Models\Codes;
+use Pensoft\Calendar\Models\Entry;
+use Backend\Facades\BackendAuth;
+use Carbon\Carbon;
+use Maatwebsite\Excel\Facades\Excel;
+
+function onStart(){
+	$this['tdwg_id'] = env('TDWG_ID');
+	$this['event_id'] = (int)$this->param('event_id');
+	$this['event'] = Entry::where('id', (int)$this->param('event_id'))->first();
+
+	$id = (int)$this->param('event_id');
+	$data = null;
+	$discount = null;
+	if($id){
+		$completedRegistrations = Data::where('submission_completed', true)->get();
+		$data = $completedRegistrations->map(function ($item) {
+
+			$country = Country::where('id', (int)$item->country_id)->first()->toArray();
+			$item->country_name = $country['name'];
+			$ticket = DiscountOptions::where('id', (int)$item->discount_option_id)->first()->toArray();
+			$item->ticket_amaount = $amount = ($item->type == 'virtual') ? $ticket['amount_virtual'] :  $ticket['amount'];
+			$item->ticket_type = $ticket['name'];
+			$item->ap = $ap = (int)$item->accompanying_person ? 120 : 0;
+			$item->help = $help = (int)$item->help_others ? 25 : 0;
+
+			$total = (int)($item->ticket_amaount + $ap + $help);
+
+			$discount = 0;
+
+			if($item->discount_code){
+				$codeData = Codes::where('code', $item->discount_code)->first();
+				if($codeData){
+					if($codeData->type == '%'){
+						$discount = ((int)$codeData->value / 100) * $amount;
+					}else{
+						$discount = (int)$codeData->value;
+					}
+				}else{
+					$discount = 0;
+				}
+			}
+
+			$item->total = $total - $discount;
+			$item->discount = $discount;
+
+
+
+			return $item;
+		});
+
+	}
+	if(!$data){
+		return \Redirect::to('/'); //TODO
+	}
+	$this['data'] = $data;
+}
+
+
+public function onExportTDWGAttendees(){
+	$attendeeIdsArr = post('attendee_ids');
+	$eventId = post('event_id');
+	$attendeeIds = implode(',', $attendeeIdsArr);
+	$items = [];
+	$items[0][0] = 'Attendee ID';
+
+
+	$collection = new \October\Rain\Support\Collection($items);
+
+
+	$r = Excel::raw(new AttendeesExport($collection), \Maatwebsite\Excel\Excel::XLSX);
+	return response()->json(['data'=>base64_encode($r)]);
+}
+
+
+?>
+
+==
 <div class="container">
-    {% component 'AttendeesList' %}
+	{% if event_id != tdwg_id %}
+    	{% component 'AttendeesList' %}
+	{% else %}
+
+	<h1>{{event.title}}</h1>
+
+
+	<table>
+		<tr>
+			<td>ID</td>
+			<td>Name</td>
+			<td>Name tag (first and last names)</td>
+			<td>Affiliation, Position</td>
+			<td>Email</td>
+			<td>Phone</td>
+			<td>Address</td>
+			<td>Emergency contact</td>
+			<td>Comments</td>
+			<td>Ticket type</td>
+			<td>Discount code</td>
+			<td>Discount</td>
+			<td>Accompanying person</td>
+			<td>Help others</td>
+			<td>Payment</td>
+		</tr>
+
+		{% for item in data %}
+
+		<tr>
+			<td>{{item.id}}</td>
+			<td>{{item.prefix}} {{item.first_name}} {{item.middle_name}} {{item.last_name}} {{item.suffix}}</td>
+			<td>{{item.first_name_tag}}</td>
+			<td>{{item.last_name_tag}}, {{item.title}}</td>
+			<td>{{item.email}}</td>
+			<td>{{item.phone}}</td>
+			<td>{{item.address|striptags}}, {{item.address2|striptags}}, {{item.country_name}}, {{item.city}}, {{item.region}}, {{item.postal_code}}</td>
+			<td>{{item.emergency_contact_name}}, {{item.emergency_contact_phone}}</td>
+			<td title="{{item.comments|striptags}}">{{ item.comments|length > 100 ? item.comments|slice(0, 100)|striptags ~ '...' : item.comments|raw  }}</td>
+			<td>{{item.type}}, {{item.ticket_type}} - {{item.ticket_amaount}} &euro;</td>
+			<td>{{item.discount_code}}</td>
+			<td>{{item.discount}} &euro;</td>
+			<td>{% if item.accompanying_person %}120 &euro;{% endif %}
+				{% if item.accompanying_person_name %}, {{item.accompanying_person_name}}{% endif %}
+				{% if item.accompanying_person_has_invoice %}, extra invoice{% endif %}</td>
+			<td>{% if item.help_others %} 25 &euro; {% endif %}
+				{% if item.help_others_has_invoice %}, extra invoice{% endif %}
+			</td>
+			<td>
+				{{item.total}} &euro;<br>
+				{% if item.invoice_email and item.total > 0 %}
+				group invoice
+				<p>{{item.invoice_group_members|raw}}</p>
+				<p>{{item.billing_details|raw}}</p>
+				<p>{{item.invoice_email}}</p>
+
+				{% endif %}</td>
+
+		</tr>
+
+		{% endfor %}
+
+
+
+
+	</table>
+
+	{% endif %}
 </div>

@@ -1,13 +1,38 @@
-url = "/event-register/:event_id?|[0-9]"
+url = "/event-register/:event_id?|[0-9]/:registration_id?|[0-9]"
 layout = "default"
 title = "Event register"
 
 [EventsRegisterForm]
+
+[TDWGForm TDWGForm]
+==
+<?php
+use Pensoft\Tdwgform\Models\Data;
+
+function onStart()
+{
+	$this['event_id'] = $this->param('event_id');
+	$this['registration_id'] = $id = (int)$this->param('registration_id');
+	$this['tdwg_id'] = env('TDWG_ID');
+	if($this->param('event_id') == env('TDWG_ID')){
+		if((int)$id){
+			$data = Data::where('id', (int)$id)->where('submission_completed', false)->first();
+			if(!$data){
+				return \Redirect::to('/')->with('message', 'Registration completed!');
+			}
+		}
+	}
+}
+?>
 ==
 <div class="container-fluid homepage-jumbotron-background">
 	<div class="container">
 		<div class="row">
-			<div class="col-xs-12">{% component 'EventsRegisterForm' %}</div>
+			{% if event_id == tdwg_id %}
+				<div class="col-xs-12">{% component 'TDWGForm' registration_id=registration_id %}</div>
+			{% else %}
+				<div class="col-xs-12">{% component 'EventsRegisterForm' %}</div>
+			{% endif %}
 		</div>
 	</div>
 

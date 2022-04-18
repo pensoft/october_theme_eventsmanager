@@ -49,6 +49,8 @@ DB::raw("
 
 $this['slug'] = $this->param('slug');
 
+$this['tdwg_id'] = env('TDWG_ID');
+
 }
 ?>
 ==
@@ -105,11 +107,14 @@ $this['slug'] = $this->param('slug');
 					{% if entry.url %}
 					<a class="mt-2 button" href="{{ entry.url }}" target="_blank">{{ 'To the event'|_ }}</a>
 					{% endif %}
-					<div class="register mt-2"><a href="{{ 'event-register' | page}}/{{entry.id}}" class="btn btn-primary">Register</a> </div>
+
+					{% if entry.active %}
+						<div class="register mt-2"><a href="{{ 'event-register' | page}}/{{entry.id}}" class="btn btn-primary">Register</a> </div>
+					{% endif %}
 
 					<div class="row middle-xs">
 						{% if loggedIn or userHasAccessFlag %}<div class="register mt-2 col-xs-2"><a href="{{ 'attendees-list' | page}}/{{entry.id}}" class="btn btn-primary btn-danger">Attendees</a> </div>{% endif %}
-						{% if loggedIn %}<div class="register mt-2 col-xs-2"><a href="javascript:void(0);"
+						{% if loggedIn and entry.id != tdwg_id %}<div class="register mt-2 col-xs-2"><a href="javascript:void(0);"
 															   data-request="EventsList::onDuplicateEvent"
 															   data-request-confirm="Do you wanna duplicate this event?"
 															   data-request-data="event_id: {{entry.id}}"

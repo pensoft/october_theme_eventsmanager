@@ -1,0 +1,250 @@
+title = "Registration preview"
+layout = "default"
+url = "/registration-preview/:registration_id?|[0-9]"
+
+[TDWGForm TDWGForm]
+==
+<?php
+use Pensoft\Tdwgform\Models\Data;
+use RainLab\Location\Models\Country;
+use Pensoft\Tdwgform\Models\DiscountOptions;
+use Pensoft\Tdwgform\Models\Codes;
+function onStart()
+{
+	$id = (int)$this->param('registration_id');
+	$this['registration_id'] = (int)$id;
+	$data = null;
+	$discount = null;
+	if($id){
+		$data = Data::where('id', (int)$id)->where('submission_completed', false)->first();
+		if(!$data){
+			return \Redirect::to('/')->with('message', 'Registration completed!'); //TODO
+		}
+		$country = Country::where('id', (int)$data->country_id)->first()->toArray();
+		$this['country_name'] = $country['name'];
+		$ticket = DiscountOptions::where('id', (int)$data->discount_option_id)->first()->toArray();
+		$this['ticket_amaount'] = $amount = ($data->type == 'virtual') ? $ticket['amount_virtual'] :  $ticket['amount'];
+		$this['ticket_type'] = $ticket['name'];
+		$ap = (int)$data->accompanying_person ? 120 : 0;
+		$help = (int)$data->help_others ? 25 : 0;
+
+
+
+		$total = (int)($this['ticket_amaount'] + $ap + $help);
+
+		$discount = 0;
+
+		if($data->discount_code){
+			$codeData = Codes::where('code', $data->discount_code)->where('is_used', false)->first();
+			if($codeData){
+				if($codeData->type == '%'){
+					$discount = ((int)$codeData->value / 100) * $amount;
+				}else{
+					$discount = (int)$codeData->value;
+				}
+			}else{
+				$discount = 0;
+			}
+		}
+
+		$this['total'] = $total - $discount;
+		$this['discount'] = $discount;
+	}
+	if(!$data){
+		return \Redirect::to('/'); //TODO
+	}
+	$this['data'] = $data;
+	$this['tdwg_id'] = env('TDWG_ID');
+}
+
+?>
+==
+<div class="container-fluid homepage-jumbotron-background">
+	<div class="container registration-preview">
+		{% if data %}
+
+		<h1>Registration form data preview</h1>
+		<h3>Some intro text</h3>
+			<div class="row">
+				<div class="col-md-12 col-xs-12">
+					<b>Registration request:</b>
+				<span class="text-ligth">{{data.type}}</span>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-3 col-xs-12">
+					<b>Name:</b>
+					<span class="text-ligth">{{data.prefix}} {{data.first_name}} {{data.middle_name}} {{data.last_name}} {{data.suffix}}</span>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-md-6 col-xs-12">
+					<b>Name tag (first and last names):</b>
+					<span class="text-light">{{data.first_name_tag}}</span>
+				</div>
+
+			</div>
+
+			<div class="row">
+				<div class="col-md-6 col-xs-12">
+					<b>Affiliation:</b>
+					<span class="text-light">{{data.last_name_tag}}</span>
+				</div>
+				<div class="col-md-6 col-xs-12">
+					<b>Position:</b>
+					<span class="text-light">{{data.title}}</span>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-4 col-xs-12">
+					<b>Email:</b>
+					<span class="text-light">{{data.email}}</span>
+				</div>
+				<div class="col-md-4 col-xs-12">
+					<b>Phone:</b>
+					<span class="text-light">{{data.phone}}</span>
+				</div>
+
+			</div>
+			<div class="row">
+				<div class="col-md-6 col-xs-12">
+					<b>Address line 1:</b>
+					<span class="text-light">{{data.address|striptags}}</span>
+				</div>
+				<div class="col-md-6 col-xs-12">
+					<b>Address line 2:</b>
+					<span class="text-light">{{data.address2|striptags}}</span>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-6 col-xs-12">
+					<b>Country:</b>
+					<span class="text-light">{{country_name}}</span>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-4 col-xs-12">
+					<b>City:</b>
+					<span class="text-light">{{data.city}}</span>
+				</div>
+				<div class="col-md-4 col-xs-12">
+					<b>State / Province / Region:</b>
+					<span class="text-light">{{data.region}}</span>
+				</div>
+				<div class="col-md-4 col-xs-12">
+					<b>Zip / Postal Code:</b>
+					<span class="text-light">{{data.postal_code}}</span>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-6 col-xs-12">
+					<b>Emergency contact name:</b>
+					<span class="text-light">{{data.emergency_contact_name}}</span>
+				</div>
+				<div class="col-md-6 col-xs-12">
+			
+					<b>Emergency contact phone:</b>
+					<span class="text-light">{{data.emergency_contact_phone}}</span>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-12 col-xs-12">
+					<b>Comments:</b>
+					<span class="text-light">{{data.comments|raw}}</span>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-6 col-xs-12">
+					<b>Ticket type:</b>
+					<span class="text-light">{{ticket_type}} - {{ticket_amaount}} &euro;</span>
+				</div>
+				{% if data.discount_code %}
+				<div class="col-md-3 col-xs-12">
+					<b>Members code:</b>
+					<span class="text-light">{{data.discount_code}}</span>
+				</div>
+				<div class="col-md-3 col-xs-12">
+					<b>Discount:</b>
+					<span class="text-light">{{discount}} &euro;</span>
+				</div>
+				{% endif %}
+			</div>
+			{% if data.accompanying_person %}
+			<div class="row">
+				<div class="col-md-12 col-xs-12">
+					<b>Accompanying person:</b>
+					<span class="text-light">{% if data.accompanying_person_name %}{{data.accompanying_person_name}}, {% else %}Yes -{% endif %} 120 &euro;</span>
+				</div>
+			</div>
+		   	{% endif %}
+			{% if data.accompanying_person_has_invoice %}
+			<div class="row">
+				<div class="col-md-12 col-xs-12">
+					<b>I want an extra invoice for the accompanying person:</b>
+					<span class="text-light">Yes</span>
+				</div>
+			</div>
+			{% endif %}
+			{% if data.help_others %}
+			<div class="row">
+				<div class="col-md-12 col-xs-12">
+					<b>I want to help by donating funds to be used to help cover registrations for others who need support. - 25 &euro;:</b>
+					<span class="text-light">Yes</span>
+				</div>
+			</div>
+			{% endif %}
+			{% if data.help_others_has_invoice %}
+			<div class="row">
+				<div class="col-md-12 col-xs-12">
+					<b>I want an extra invoice for the donation funds:</b>
+					<span class="text-light">Yes</span>
+				</div>
+			</div>
+			{% endif %}
+			{% if data.invoice_email and data.total > 0 %}
+			<div class="row">
+				<div class="col-md-12 col-xs-12">
+					<b>Payment:</b>
+					<span class="text-light">I need a group invoice (payment due on receipt by Bank card, PayPal)</span>
+				</div>
+			</div>
+				<div class="row">
+					<div class="col-md-12 col-xs-12">
+						<b>List of people who will register and should be added to the same invoice:</b>
+						<span class="text-light">{{data.invoice_group_members|raw}}</span>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-12 col-xs-12">
+						<b>Billing details (company name, VAT number, address, country):</b>
+						<span class="text-light">{{data.billing_details|raw}}</span>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-12 col-xs-12">
+						<b>Send invoice to the following email:</b>
+						<span class="text-light">{{data.invoice_email}}</span>
+					</div>
+				</div>
+			</div>
+			{% endif %}
+
+			
+			<div class="row center-xs">
+				<div class="col-xs-12 col-md-6">
+					<a href="/event-register/{{tdwg_id}}/{{data.id}}" class="btn btn-primary">Back</a>
+						&nbsp;
+					{% if total > 0 %}
+						<a href="javascript:void(0);" onclick="proccedToPayment({{data.id}});" class="btn btn-primary">Proceed to payment {{total}} &euro;</a>
+					{% else %}
+						<a href="javascript:void(0);" onclick="finishRegistration({{data.id}});" class="btn btn-primary">Finish registration</a>
+					{% endif %}
+				</div>
+			</div>
+		{% else %}
+			{{message}}
+		{% endif %}
+	</div>
+
+</div>
