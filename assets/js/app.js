@@ -163,9 +163,11 @@ $(document).ready(function() {
 		var selected = $(this).val(); // virtual or physical
 
 		$('#accompanying_person_field_container').show(300);
+		$('#accompanying_person_name_field').show(300);
 
 		if(selected == 'virtual'){
 			$('#accompanying_person_field_container').hide(200);
+			$('#accompanying_person_name_field').hide(200);
 		}
 		$.request('onTicketsList', {
 			data: {
