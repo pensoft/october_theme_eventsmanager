@@ -11,15 +11,25 @@ $(document).ready(function() {
 	}else{
 		$("#group_invoice_fields").hide(200);
 	}
-
+	var selectedRegistrationRequest = $('#registration_request_field select').val(); // virtual or physical
 	var ticket = $('#discount_options_field select :selected').val();
 	if(ticket > 1){
 		$("#members_code_field").hide(200);
+		$('#ticket_type_message').hide(200);
 	}else{
 		$("#members_code_field").show(300);
+		if(selectedRegistrationRequest == 'physical'){
+			$.request('onCheckEarlyBookingDate', {
+				data: {},
+			}).then(response => {
+				if(response.result){
+					$('#ticket_type_message').show(300);
+				}else{
+					$('#ticket_type_message').hide(200);
+				}
+			});
+		}
 	}
-
-	var selectedRegistrationRequest = $('#registration_request_field select').val(); // virtual or physical
 
 	$('#accompanying_person_field_container').show(300);
 
@@ -62,8 +72,21 @@ $(document).ready(function() {
 		var inputValue = $(this).val();
 		if(inputValue > 1){
 			$("#members_code_field").hide(200);
+			$('#ticket_type_message').hide(200);
 		}else{
 			$("#members_code_field").show(300);
+			if(selectedRegistrationRequest == 'physical'){
+				$.request('onCheckEarlyBookingDate', {
+					data: {},
+				}).then(response => {
+					if(response.result){
+						$('#ticket_type_message').show(300);
+					}else{
+						$('#ticket_type_message').hide(200);
+					}
+				});
+			}
+
 		}
 	});
 

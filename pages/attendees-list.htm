@@ -36,7 +36,7 @@ function onStart(){
 			$ticket = DiscountOptions::where('id', (int)$item->discount_option_id)->first()->toArray();
 			$item->ticket_amaount = $amount = ($item->type == 'virtual') ? $ticket['amount_virtual'] :  $ticket['amount'];
 			$item->ticket_type = $ticket['name'];
-			$item->ap = $ap = (int)$item->accompanying_person ? 120 : 0;
+			$item->ap = $ap = (int)$item->accompanying_person ? 135 : 0;
 			$item->help = $help = (int)$item->help_others ? 25 : 0;
 
 			$total = (int)($item->ticket_amaount + $ap + $help);
@@ -133,7 +133,7 @@ public function onExportTDWGAttendees(){
 			<td>{{item.type}}, {{item.ticket_type}} - {{item.ticket_amaount}} &euro;</td>
 			<td>{{item.discount_code}}</td>
 			<td>{{item.discount}} &euro;</td>
-			<td>{% if item.accompanying_person %}120 &euro;{% endif %}
+			<td>{% if item.accompanying_person %}135 &euro;{% endif %}
 				{% if item.accompanying_person_name %}, {{item.accompanying_person_name}}{% endif %}
 				{% if item.accompanying_person_has_invoice %}, extra invoice{% endif %}</td>
 			<td>{% if item.help_others %} 25 &euro; {% endif %}
