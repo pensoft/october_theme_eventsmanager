@@ -147,8 +147,12 @@
     border-radius: 50%;
   }
 
+  .ticket_type_message{
+    color: #74be45;
+  }
+
   .discount_code_success_message{
-    color: green;
+    color: #74be45;
   }
 
   .discount_code_err_message{
@@ -189,4 +193,109 @@
   }
 
 
+
+
+  .custom_check {
+    margin-top: 2rem;
+
+    .field {
+      margin-top: 1rem;
+    }
+    input[type="checkbox"] {
+      /* Add if not using autoprefixer */
+      -webkit-appearance: none;
+      /* Remove most all native input styles */
+      appearance: none;
+      /* For iOS < 15 */
+      background-color: white;
+      /* Not removed via appearance */
+      margin: 0;
+
+      font: inherit;
+      color: #e7e6e7;
+      width: 25px;
+      height: 25px;
+      border: 2px solid #cccccc;
+      border-radius: 0.15em;
+      transform: translateY(-0.075em);
+
+      display: grid;
+      place-content: center;
+      float: left;
+      margin:  4px 10px 10px 0;
+    }
+
+    input[type="checkbox"]::before {
+      content: "";
+      width: 0.9em;
+      height: 0.9em;
+      clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+      transform: scale(0);
+      transform-origin: bottom left;
+      transition: 120ms transform ease-in-out;
+      box-shadow: inset 1em 1em #74be45;
+      /* Windows High Contrast Mode */
+      background-color: #74be45;
+    }
+
+    input[type="checkbox"]:checked::before {
+      transform: scale(1);
+    }
+
+  }
+
+}
+
+
+
+.spinner {
+  margin: 0 auto;
+  padding: 40vh 0 0 0;
+  height: 100vh;
+  //width: 70px;
+  text-align: center;
+  display: block;
+  position: fixed;
+  background-color:rgba(0, 0, 0, 0.2);
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10000;
+}
+
+.spinner > div {
+  width: 30px;
+  height: 30px;
+  background-color: #74be45;
+
+  border-radius: 100%;
+  display: inline-block;
+  -webkit-animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+  animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+}
+
+.spinner .bounce1 {
+  -webkit-animation-delay: -0.32s;
+  animation-delay: -0.32s;
+}
+
+.spinner .bounce2 {
+  -webkit-animation-delay: -0.16s;
+  animation-delay: -0.16s;
+}
+
+@-webkit-keyframes sk-bouncedelay {
+  0%, 80%, 100% { -webkit-transform: scale(0) }
+  40% { -webkit-transform: scale(1.0) }
+}
+
+@keyframes sk-bouncedelay {
+  0%, 80%, 100% {
+    -webkit-transform: scale(0);
+    transform: scale(0);
+  } 40% {
+      -webkit-transform: scale(1.0);
+      transform: scale(1.0);
+    }
 }

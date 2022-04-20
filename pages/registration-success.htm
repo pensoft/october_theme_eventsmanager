@@ -1,0 +1,31 @@
+title = "Registration success"
+layout = "default"
+url = "/registration-success"
+
+[TDWGForm TDWGForm]
+==
+<?php
+	function onStart(){
+		if($this['link']){
+			header('Refresh: 10; URL='.$this['link']);
+		}
+	}
+?>
+==
+<div class="container-fluid homepage-jumbotron-background">
+	<div class="container registration-preview">
+		{% if message != '' %}
+
+		<div class="flash-message static success">
+			{{ message | raw }}
+		</div>
+
+		{% if payment_message %}
+		<div class="flash-message static success">
+			{{ payment_message | raw }}
+		</div>
+		{% endif %}
+
+		{% endif %}
+	</div>
+</div>

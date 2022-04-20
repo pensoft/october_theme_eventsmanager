@@ -18,11 +18,13 @@ function onStart()
 	$this['registration_id'] = (int)$id;
 	$data = null;
 	$discount = null;
-	if($id){
+	$data = Data::where('id', (int)$id)->where('submission_completed', false)->first();
+	if(!$data){
+		return \Redirect::to('/');
+	}
+	if($data){
 		$data = Data::where('id', (int)$id)->where('submission_completed', false)->first();
-		if(!$data){
-			return \Redirect::to('/')->with('message', 'Registration completed!'); //TODO
-		}
+
 		$country = Country::where('id', (int)$data->country_id)->first()->toArray();
 		$this['country_name'] = $country['name'];
 		$ticket = DiscountOptions::where('id', (int)$data->discount_option_id)->first()->toArray();
@@ -31,36 +33,35 @@ function onStart()
 		$ap = (int)$data->accompanying_person ? 135 : 0;
 		$help = (int)$data->help_others ? 25 : 0;
 
+		$earlyDiscount = 0;
+		if( $data->type == 'physical' && (int)$data->discount_option_id == 1 && Carbon::now() <=  env('EARLY_BOOKING_DATE')){
+			$this['early_msg'] = 'Early Registration Discount is applied';
+			$this['code_msg'] = 'Membership Discount Code is applied';
+			$earlyDiscount += 50;
+		}
 
+		$amount = $amount - $earlyDiscount;
 
-		$total = (int)($this['ticket_amaount'] + $ap + $help);
-
-		$discount = 0;
-
+		$codeDiscount = 0;
 		if($data->discount_code){
 			$codeData = Codes::where('code', $data->discount_code)->where('is_used', false)->first();
 			if($codeData){
 				if($codeData->type == '%'){
-					$discount += ((int)$codeData->value / 100) * $amount;
+					$codeDiscount += ((int)$codeData->value / 100) * $amount;
 				}else{
-					$discount += (int)$codeData->value;
+					$codeDiscount += (int)$codeData->value;
 				}
+				$amount = $amount - $codeDiscount;
 			}else{
-				$discount = 0;
+				$codeDiscount = 0;
 			}
 		}
-		if( $data->type == 'physical' && (int)$data->discount_option_id == 1 && Carbon::now() <=  env('EARLY_BOOKING_DATE')){
-			$this['early'] = 'Early Registration Discount is applied';
-			$discount += 50;
-		}
 
+		$this['total'] = $amount + $ap + $help;
+		$this['code_discount'] = $codeDiscount;
+		$this['early_discount'] = $earlyDiscount;
+	}
 
-		$this['total'] = $total - $discount;
-		$this['discount'] = $discount;
-	}
-	if(!$data){
-		return \Redirect::to('/'); //TODO
-	}
 	$this['data'] = $data;
 	$this['tdwg_id'] = env('TDWG_ID');
 }
@@ -69,10 +70,16 @@ function onStart()
 ==
 <div class="container-fluid homepage-jumbotron-background">
 	<div class="container registration-preview">
+		<div class="spinner" id="loading_gif">
+			<div class="bounce1"></div>
+			<div class="bounce2"></div>
+			<div class="bounce3"></div>
+		</div>
+
 		{% if data %}
 
 		<h1>Registration form data preview</h1>
-		<h3>Some intro text</h3>
+		<h3>Please check your details before proceeding to payment or finish your registration.</h3>
 			<div class="row">
 				<div class="col-md-12 col-xs-12">
 					<b>Registration request:</b>
@@ -85,7 +92,7 @@ function onStart()
 					<span class="text-ligth">{{data.prefix}} {{data.first_name}} {{data.middle_name}} {{data.last_name}} {{data.suffix}}</span>
 				</div>
 			</div>
-
+			{% if data.first_name_tag %}
 			<div class="row">
 				<div class="col-md-6 col-xs-12">
 					<b>Name tag (first and last names):</b>
@@ -93,37 +100,47 @@ function onStart()
 				</div>
 
 			</div>
+			{% endif %}
 
+			{% if data.last_name_tag or data.title %}
 			<div class="row">
+				{% if data.last_name_tag %}
 				<div class="col-md-6 col-xs-12">
 					<b>Affiliation:</b>
 					<span class="text-light">{{data.last_name_tag}}</span>
 				</div>
+				{% endif %}
+				{% if data.title %}
 				<div class="col-md-6 col-xs-12">
 					<b>Position:</b>
 					<span class="text-light">{{data.title}}</span>
 				</div>
+				{% endif %}
 			</div>
+			{% endif %}
 			<div class="row">
 				<div class="col-md-4 col-xs-12">
 					<b>Email:</b>
 					<span class="text-light">{{data.email}}</span>
 				</div>
+				{% if data.phone %}
 				<div class="col-md-4 col-xs-12">
 					<b>Phone:</b>
 					<span class="text-light">{{data.phone}}</span>
 				</div>
-
+				{% endif %}
 			</div>
 			<div class="row">
 				<div class="col-md-6 col-xs-12">
 					<b>Address line 1:</b>
 					<span class="text-light">{{data.address|striptags}}</span>
 				</div>
+				{% if data.address2 %}
 				<div class="col-md-6 col-xs-12">
 					<b>Address line 2:</b>
 					<span class="text-light">{{data.address2|striptags}}</span>
 				</div>
+				{% endif %}
 			</div>
 			<div class="row">
 				<div class="col-md-6 col-xs-12">
@@ -136,10 +153,12 @@ function onStart()
 					<b>City:</b>
 					<span class="text-light">{{data.city}}</span>
 				</div>
+				{% if data.region %}
 				<div class="col-md-4 col-xs-12">
 					<b>State / Province / Region:</b>
 					<span class="text-light">{{data.region}}</span>
 				</div>
+				{% endif %}
 				<div class="col-md-4 col-xs-12">
 					<b>Zip / Postal Code:</b>
 					<span class="text-light">{{data.postal_code}}</span>
@@ -156,33 +175,54 @@ function onStart()
 					<span class="text-light">{{data.emergency_contact_phone}}</span>
 				</div>
 			</div>
+			{% if data.twitter or data.slack_email %}
+			<div class="row">
+				{% if data.slack_email %}
+				<div class="col-md-6 col-xs-12">
+					<b>Preferred email when using Slack or Discord:</b>
+					<span class="text-light">{{data.slack_email}}</span>
+				</div>
+				{% endif %}
+				{% if data.twitter %}
+				<div class="col-md-6 col-xs-12">
+					<b>My twitter handle:</b>
+					<span class="text-light">{{data.twitter}}</span>
+				</div>
+				{% endif %}
+			</div>
+			{% endif %}
+
+			{% if data.comments %}
 			<div class="row">
 				<div class="col-md-12 col-xs-12">
 					<b>Comments:</b>
 					<span class="text-light">{{data.comments|raw}}</span>
 				</div>
 			</div>
+			{% endif %}
 			<div class="row">
 				<div class="col-md-6 col-xs-12">
 					<b>Ticket type:</b>
 					<span class="text-light">{{ticket_type}}, {{ticket_amaount}} &euro;</span>
+					{% if early_discount %}
+					<br />
+					<em>{{early_msg}}</em>:
+					<span class="text-light">-{{early_discount}} &euro;</span>
+					{% endif %}
 				</div>
 				{% if data.discount_code %}
 				<div class="col-md-6 col-xs-12">
 					<b>Members code:</b>
 					<span class="text-light">{{data.discount_code}}</span>
+					{% if code_discount %}
+					<br />
+					<em>{{code_msg}}</em>:
+					<span class="text-light">-{{code_discount}} &euro;</span>
+					{% endif %}
 				</div>
 				{% endif %}
 			</div>
-			{% if discount %}
-			<div class="row">
-				<div class="col-md-12 col-xs-12">
-					<b>Discount:</b>
-					<span class="text-light">-{{discount}} &euro;</span>
-					<br><em>{{early}}</em>
-				</div>
-			</div>
-			{% endif %}
+
 			{% if data.accompanying_person %}
 			<div class="row">
 				<div class="col-md-12 col-xs-12">
@@ -243,6 +283,48 @@ function onStart()
 			</div>
 			{% endif %}
 
+			<p>&nbsp;</p>
+			<ul>
+				{% if data.checkbox_code_of_conduct %}
+					<li>I have read the <a href="https://www.tdwg.org/about/code-of-conduct/" target="_blank">Code of Conduct</a> and <a href="https://www.tdwg.org/about/terms-of-use/" target="_blank">Terms of Use</a> and agree to abide by them.</li>
+				{% endif %}
+				{% if data.checkbox_presenting %}
+					<li>If I am presenting or participating in the conference, I understand the meetings and presentations will be recorded and posted at a future date on the public TDWG YouTube channel.</li>
+				{% endif %}
+				{% if data.checkbox_agree %}
+					<li>I agree to be contacted by event organizers.</li>
+				{% endif %}
+				{% if data.checkbox_media %}
+					<li>For any presentation I submit, I am responsible for ensuring all images and media are properly licensed / credited or <a href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank">CC0</a>. (see <a href="https://www.tdwg.org/about/terms-of-use/" target="_blank">Terms of Use</a>)</li>
+				{% endif %}
+				{% if data.checkbox_optional_abstract %}
+					<li>I plan to submit an abstract.</li>
+				{% endif %}
+				{% if data.checkbox_optional_attend_welcome %}
+					<li>I plan to attend the Welcome reception on 16 October 2022 (included in the in-person registration fee).</li>
+				{% endif %}
+				{% if data.checkbox_optional_attend_excursion %}
+					<li>I plan to attend the excursion to Rila Monastery on Wednesday 19 October 2022 (included in the in-person registration fee).</li>
+				{% endif %}
+				{% if data.checkbox_optional_attend_conference %}
+					<li>I plan to attend the conference banquet on Thursday  20 October 2022 (included in the in-person registration fee).</li>
+				{% endif %}
+				{% if data.checkbox_optional_contacted %}
+					<li>I agree to be contacted by event Supporters post-conference.</li>
+				{% endif %}
+				{% if data.checkbox_optional_understand %}
+					<li>I understand the fee for anyone I add to accompany me covers the welcome reception, excursion to Rila monastery and banquet.</li>
+				{% endif %}
+				{% if data.checkbox_optional_open_session %}
+					<li>I'm willing to chair /  moderate a general open session at TDWG2022</li>
+				{% endif %}
+				{% if data.checkbox_optional_agree_shared %}
+					<li>I agree for my name, affiliation, and email to be shared after the conference with other attendees</li>
+				{% endif %}
+			</ul>
+
+			<p>&nbsp;</p>
+
 			
 			<div class="row center-xs">
 				<div class="col-xs-12 col-md-6">
@@ -259,9 +341,26 @@ function onStart()
 					{% endif %}
 				</div>
 			</div>
+
 		{% else %}
-			{{message}}
+
+			{% if message != '' %}
+
+			<div class="flash-message static success">
+				{{ message | raw }}
+			</div>
+
+				{% if payment_message %}
+				<div class="flash-message static success">
+					{{ payment_message | raw }}
+				</div>
+				{% endif %}
+
+			{% endif %}
+
 		{% endif %}
+
+
 	</div>
 
 </div>

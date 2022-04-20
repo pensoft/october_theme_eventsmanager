@@ -5,6 +5,7 @@ var documentHasScroll = function() {
 
 
 $(document).ready(function() {
+	$('#loading_gif').hide();
 	var payment = $('#payment_options_field input[name="payment_options[]"]:checked').val();
 	if(payment == 'group_invoice'){
 		$("#group_invoice_fields").show(300);
@@ -13,7 +14,7 @@ $(document).ready(function() {
 	}
 	var selectedRegistrationRequest = $('#registration_request_field select').val(); // virtual or physical
 	var ticket = $('#discount_options_field select :selected').val();
-	if(ticket > 1){
+	if(ticket != 1){
 		$("#members_code_field").hide(200);
 		$('#ticket_type_message').hide(200);
 	}else{
@@ -35,6 +36,8 @@ $(document).ready(function() {
 
 	if(selectedRegistrationRequest == 'virtual'){
 		$('#accompanying_person_field_container').hide(200);
+		$('#accompanying_person_name_field').hide(200);
+		$('.hide_for_virtual').hide(200);
 		var newRegistrationType = {
 			"-- Choose --": "",
 		};
@@ -70,7 +73,7 @@ $(document).ready(function() {
 
 	$('#discount_options_field select[name="discount_options"]').change(function(){
 		var inputValue = $(this).val();
-		if(inputValue > 1){
+		if(inputValue != 1){
 			$("#members_code_field").hide(200);
 			$('#ticket_type_message').hide(200);
 		}else{
@@ -163,11 +166,18 @@ $(document).ready(function() {
 		var selected = $(this).val(); // virtual or physical
 
 		$('#accompanying_person_field_container').show(300);
-		$('#accompanying_person_name_field').show(300);
+		$('.hide_for_virtual').show(300);
+
+		if($('#accompanying_person_field').is(":checked")) {
+			$("#accompanying_person_name_field").show(300);
+		} else {
+			$("#accompanying_person_name_field").hide(200);
+		}
 
 		if(selected == 'virtual'){
 			$('#accompanying_person_field_container').hide(200);
 			$('#accompanying_person_name_field').hide(200);
+			$('.hide_for_virtual').hide(200);
 		}
 		$.request('onTicketsList', {
 			data: {
@@ -260,7 +270,7 @@ $(document).ready(function() {
 
 			if(response.result){
 				$('#discount_code_err_message').text('');
-				var successMsg = 'A discount with a <b>' + response.result.value + ' ' + response.result.type + '</b> value will be automatically applied'
+				var successMsg = '<b>' + response.result.value + ' ' + response.result.type + '</b>  discount will be applied'
 				$('#discount_code_success_message').html(successMsg);
 			}
 		});
@@ -284,7 +294,7 @@ $(document).ready(function() {
 
 				if(response.result){
 					$('#discount_code_err_message').text('');
-					var successMsg = 'A discount with a <b>' + response.result.value + ' ' + response.result.type + '</b> value will be automatically applied'
+					var successMsg = '<b>' + response.result.value + ' ' + response.result.type + '</b>  discount will be applied'
 					$('#discount_code_success_message').html(successMsg);
 				}
 			});
@@ -295,20 +305,24 @@ $(document).ready(function() {
 
 
 function proccedToPayment(ID){
+	$('#loading_gif').show();
 	$.request('onPaymentProceed', {
 		data: {
 			ID: ID
 		},
 	}).then(response => {
-
+		$('#loading_gif').hide();
 	});
 }
 
 function finishRegistration(ID){
+	$('#loading_gif').show();
 	$.request('onFinishRegistration', {
 		data: {
 			ID: ID
 		}
+	}).then(response => {
+		$('#loading_gif').hide();
 	});
 }
 
