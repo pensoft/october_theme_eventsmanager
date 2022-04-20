@@ -6,6 +6,10 @@ var documentHasScroll = function() {
 
 $(document).ready(function() {
 	$('#loading_gif').hide();
+	$('#payment_options').removeClass('red');
+	$("#tdwg_registration_form input, #tdwg_registration_form select, #tdwg_registration_form textarea").blur(function () {
+		$(this).removeClass('red');
+	});
 	var payment = $('#payment_options_field input[name="payment_options[]"]:checked').val();
 	if(payment == 'group_invoice'){
 		$("#group_invoice_fields").show(300);
@@ -420,5 +424,28 @@ function onExportTDWGAttendees() {
 		});
 }
 
+
+function submitTDWGForm(e){
+	e.preventDefault();
+	$("#tdwg_registration_form").submit();
+	grecaptcha.ready(function() {
+		grecaptcha.execute('6LcoSYEfAAAAABbxngKDKPmBG8ZhrBT6lrgzsE1z', {action: 'submit'}).then(function(token) {
+			// Add your logic to submit to your backend server here.
+			document.getElementById('g-recaptcha-response').value = token;
+			$('#tdwg_registration_form').submit();
+		});
+	});
+}
+
+function scrollToField(errors){
+	$("#tdwg_registration_form input, #tdwg_registration_form select, #tdwg_registration_form textarea, #tdwg_registration_form .row").removeClass('red');
+	$.each(errors.scroll_to_field, function(key,valueObj){
+		$("#"+key).addClass('red');
+		$('html, body').animate({
+			scrollTop: $("#"+key).offset().top - 150
+		}, 1000);
+		return false; // breaks
+	});
+}
 
 init()

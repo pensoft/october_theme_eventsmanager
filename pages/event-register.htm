@@ -26,14 +26,6 @@ function onStart()
 ?>
 ==
 <script src="https://www.google.com/recaptcha/api.js?render=6LcoSYEfAAAAABbxngKDKPmBG8ZhrBT6lrgzsE1z"></script>
-<script>
-    grecaptcha.ready(function() {
-        grecaptcha.execute('6LcoSYEfAAAAABbxngKDKPmBG8ZhrBT6lrgzsE1z', {action:'submit'})
-                  .then(function(token) {
-            document.getElementById('g-recaptcha-response').value = token;
-        });
-    });
-</script>
 <div class="container-fluid homepage-jumbotron-background">
 	<div class="container">
 		<div class="row">
