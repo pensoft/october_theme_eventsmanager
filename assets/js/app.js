@@ -427,6 +427,12 @@ function onExportTDWGAttendees() {
 
 function submitTDWGForm(e){
 	e.preventDefault();
+	var group_members_list = CKEDITOR.instances['group_members_list'].getData();
+	$('#group_members_list').val(group_members_list);
+	var comments = CKEDITOR.instances['comments'].getData();
+	$('#comments').val(comments);
+	var billing_details = CKEDITOR.instances['billing_details'].getData();
+	$('#billing_details').val(billing_details);
 	grecaptcha.ready(function() {
 		grecaptcha.execute('6LcoSYEfAAAAABbxngKDKPmBG8ZhrBT6lrgzsE1z', {action: 'submit'}).then(function(token) {
 			// Add your logic to submit to your backend server here.
