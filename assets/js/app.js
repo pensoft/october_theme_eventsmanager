@@ -427,7 +427,6 @@ function onExportTDWGAttendees() {
 
 function submitTDWGForm(e){
 	e.preventDefault();
-	$("#tdwg_registration_form").submit();
 	grecaptcha.ready(function() {
 		grecaptcha.execute('6LcoSYEfAAAAABbxngKDKPmBG8ZhrBT6lrgzsE1z', {action: 'submit'}).then(function(token) {
 			// Add your logic to submit to your backend server here.
