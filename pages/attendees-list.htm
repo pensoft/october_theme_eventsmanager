@@ -41,25 +41,31 @@ function onStart(){
 
 			$total = (int)($item->ticket_amaount + $ap + $help);
 
-			$discount = 0;
+			$earlyDiscount = 0;
+			if( $item->type == 'physical' && (int)$item->discount_option_id == 1 && Carbon::now() <=  env('EARLY_BOOKING_DATE')){
+				$earlyDiscount += 50;
+			}
 
+			$amount = $amount - $earlyDiscount;
+
+			$codeDiscount = 0;
 			if($item->discount_code){
 				$codeData = Codes::where('code', $item->discount_code)->first();
 				if($codeData){
 					if($codeData->type == '%'){
-						$discount = ((int)$codeData->value / 100) * $amount;
+						$codeDiscount += ((int)$codeData->value / 100) * $amount;
 					}else{
-						$discount = (int)$codeData->value;
+						$codeDiscount += (int)$codeData->value;
 					}
+					$amount = $amount - $codeDiscount;
 				}else{
-					$discount = 0;
+					$codeDiscount = 0;
 				}
 			}
 
-			$item->total = $total - $discount;
-			$item->discount = $discount;
-
-
+			$item->total = $amount + $ap + $help;
+			$item->code_discount = $codeDiscount;
+			$item->early_discount = $earlyDiscount;
 
 			return $item;
 		});
@@ -146,7 +152,8 @@ public function onExportTDWGAttendees(){
 			<td title="{{item.comments|striptags}}">{{ item.comments|length > 100 ? item.comments|slice(0, 100)|striptags ~ '...' : item.comments|raw  }}</td>
 			<td>{{item.type}}, {{item.ticket_type}} - {{item.ticket_amaount}} &euro;</td>
 			<td>{{item.discount_code}}</td>
-			<td>{% if item.discount %}{{item.discount}} &euro;{% endif %}</td>
+			<td>{% if item.early_discount %}Early booking discount: {{item.early_discount}} &euro;{% endif %}
+				{% if item.code_discount %}Code discount: {{item.code_discount}} &euro;{% endif %}</td>
 			<td>{% if item.accompanying_person %}135 &euro;{% endif %}
 				{% if item.accompanying_person_name %}, {{item.accompanying_person_name}}{% endif %}
 				{% if item.accompanying_person_has_invoice %}, extra invoice{% endif %}</td>

@@ -17,7 +17,7 @@ function onStart()
 	$this['tdwg_id'] = env('TDWG_ID');
 	if($this->param('event_id') == env('TDWG_ID')){
 		if($id){
-			$data = Data::where('data_id', $id)->where('submission_completed', null)->first();
+			$data = Data::where('data_id', $id)->whereRaw('submission_completed IS NOT TRUE')->first();
 			$this['data'] = $data;
 			if(!$data){
 				return \Redirect::to('/');

@@ -19,12 +19,12 @@ function onStart()
 	$this['registration_id'] = $id;
 	$data = null;
 	$discount = null;
-	$data = Data::where('data_id', $id)->where('submission_completed', null)->first();
+	$data = Data::where('data_id', $id)->whereRaw('submission_completed IS NOT TRUE')->first();
+
 	if(!$data){
 		return \Redirect::to('/');
 	}
 	if($data){
-		$data = Data::where('data_id', $id)->where('submission_completed', null)->first();
 		$country = Country::where('id', (int)$data->country_id)->first()->toArray();
 		$this['country_name'] = $country['name'];
 		$ticket = DiscountOptions::where('id', (int)$data->discount_option_id)->first()->toArray();
@@ -61,7 +61,10 @@ function onStart()
 		$this['code_discount'] = $codeDiscount;
 		$this['early_discount'] = $earlyDiscount;
 	}
+
+
 	$this['formData'] = $data;
+	$this['registration_id'] = $this->param('registration_id');
 	$this['tdwg_id'] = env('TDWG_ID');
 }
 
@@ -325,7 +328,7 @@ function onStart()
 			
 			<div class="row center-xs">
 				<div class="col-xs-12 col-md-6">
-					<a href="/event-register/{{tdwg_id}}/{{formData.data_id}}" class="btn btn-primary">Back</a>
+					<a href="/event-register/{{tdwg_id}}/{{registration_id}}" class="btn btn-primary">Back</a>
 						&nbsp;
 					{% if total > 0 %}
 						{% if formData.invoice_email %}
