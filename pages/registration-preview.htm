@@ -1,6 +1,6 @@
 title = "Registration preview"
 layout = "default"
-url = "/registration-preview/:registration_id?|[0-9]"
+url = "/registration-preview/:registration_id?|[a-zA-Z\-0-9]"
 
 [TDWGForm TDWGForm]
 ==
@@ -11,20 +11,20 @@ use Pensoft\Tdwgform\Models\DiscountOptions;
 use Pensoft\Tdwgform\Models\Codes;
 
 use Carbon\Carbon;
+use Ramsey\Uuid\Uuid;
 
 function onStart()
 {
-	$id = (int)$this->param('registration_id');
-	$this['registration_id'] = (int)$id;
+	$id = $this->param('registration_id');
+	$this['registration_id'] = $id;
 	$data = null;
 	$discount = null;
-	$data = Data::where('id', (int)$id)->where('submission_completed', false)->first();
+	$data = Data::where('data_id', $id)->where('submission_completed', null)->first();
 	if(!$data){
 		return \Redirect::to('/');
 	}
 	if($data){
-		$data = Data::where('id', (int)$id)->where('submission_completed', false)->first();
-
+		$data = Data::where('data_id', $id)->where('submission_completed', null)->first();
 		$country = Country::where('id', (int)$data->country_id)->first()->toArray();
 		$this['country_name'] = $country['name'];
 		$ticket = DiscountOptions::where('id', (int)$data->discount_option_id)->first()->toArray();
@@ -61,8 +61,7 @@ function onStart()
 		$this['code_discount'] = $codeDiscount;
 		$this['early_discount'] = $earlyDiscount;
 	}
-
-	$this['data'] = $data;
+	$this['formData'] = $data;
 	$this['tdwg_id'] = env('TDWG_ID');
 }
 
@@ -75,45 +74,44 @@ function onStart()
 			<div class="bounce2"></div>
 			<div class="bounce3"></div>
 		</div>
-
-		{% if data %}
+		{% if formData %}
 
 		<h1>Registration form data preview</h1>
 		<h3>Please check your details before proceeding to payment or finish your registration.</h3>
 			<div class="row">
 				<div class="col-md-12 col-xs-12">
 					<b>Registration request:</b>
-				<span class="text-ligth">{{data.type}}</span>
+				<span class="text-ligth">{{formData.type}}</span>
 				</div>
 			</div>
 			<div class="row">
 				<div class="col-md-3 col-xs-12">
 					<b>Name:</b>
-					<span class="text-ligth">{{data.prefix}} {{data.first_name}} {{data.middle_name}} {{data.last_name}} {{data.suffix}}</span>
+					<span class="text-ligth">{{formData.prefix}} {{formData.first_name}} {{formData.middle_name}} {{formData.last_name}} {{formData.suffix}}</span>
 				</div>
 			</div>
-			{% if data.first_name_tag %}
+			{% if formData.first_name_tag %}
 			<div class="row">
 				<div class="col-md-6 col-xs-12">
 					<b>Name tag (first and last names):</b>
-					<span class="text-light">{{data.first_name_tag}}</span>
+					<span class="text-light">{{formData.first_name_tag}}</span>
 				</div>
 
 			</div>
 			{% endif %}
 
-			{% if data.last_name_tag or data.title %}
+			{% if formData.last_name_tag or formData.title %}
 			<div class="row">
-				{% if data.last_name_tag %}
+				{% if formData.last_name_tag %}
 				<div class="col-md-6 col-xs-12">
 					<b>Affiliation:</b>
-					<span class="text-light">{{data.last_name_tag}}</span>
+					<span class="text-light">{{formData.last_name_tag}}</span>
 				</div>
 				{% endif %}
-				{% if data.title %}
+				{% if formData.title %}
 				<div class="col-md-6 col-xs-12">
 					<b>Position:</b>
-					<span class="text-light">{{data.title}}</span>
+					<span class="text-light">{{formData.title}}</span>
 				</div>
 				{% endif %}
 			</div>
@@ -121,24 +119,24 @@ function onStart()
 			<div class="row">
 				<div class="col-md-4 col-xs-12">
 					<b>Email:</b>
-					<span class="text-light">{{data.email}}</span>
+					<span class="text-light">{{formData.email}}</span>
 				</div>
-				{% if data.phone %}
+				{% if formData.phone %}
 				<div class="col-md-4 col-xs-12">
 					<b>Phone:</b>
-					<span class="text-light">{{data.phone}}</span>
+					<span class="text-light">{{formData.phone}}</span>
 				</div>
 				{% endif %}
 			</div>
 			<div class="row">
 				<div class="col-md-6 col-xs-12">
 					<b>Address line 1:</b>
-					<span class="text-light">{{data.address|striptags}}</span>
+					<span class="text-light">{{formData.address|striptags}}</span>
 				</div>
-				{% if data.address2 %}
+				{% if formData.address2 %}
 				<div class="col-md-6 col-xs-12">
 					<b>Address line 2:</b>
-					<span class="text-light">{{data.address2|striptags}}</span>
+					<span class="text-light">{{formData.address2|striptags}}</span>
 				</div>
 				{% endif %}
 			</div>
@@ -151,52 +149,52 @@ function onStart()
 			<div class="row">
 				<div class="col-md-4 col-xs-12">
 					<b>City:</b>
-					<span class="text-light">{{data.city}}</span>
+					<span class="text-light">{{formData.city}}</span>
 				</div>
-				{% if data.region %}
+				{% if formData.region %}
 				<div class="col-md-4 col-xs-12">
 					<b>State / Province / Region:</b>
-					<span class="text-light">{{data.region}}</span>
+					<span class="text-light">{{formData.region}}</span>
 				</div>
 				{% endif %}
 				<div class="col-md-4 col-xs-12">
 					<b>Zip / Postal Code:</b>
-					<span class="text-light">{{data.postal_code}}</span>
+					<span class="text-light">{{formData.postal_code}}</span>
 				</div>
 			</div>
 			<div class="row">
 				<div class="col-md-6 col-xs-12">
 					<b>Emergency contact name:</b>
-					<span class="text-light">{{data.emergency_contact_name}}</span>
+					<span class="text-light">{{formData.emergency_contact_name}}</span>
 				</div>
 				<div class="col-md-6 col-xs-12">
 			
 					<b>Emergency contact phone:</b>
-					<span class="text-light">{{data.emergency_contact_phone}}</span>
+					<span class="text-light">{{formData.emergency_contact_phone}}</span>
 				</div>
 			</div>
-			{% if data.twitter or data.slack_email %}
+			{% if formData.twitter or formData.slack_email %}
 			<div class="row">
-				{% if data.slack_email %}
+				{% if formData.slack_email %}
 				<div class="col-md-6 col-xs-12">
 					<b>Preferred email when using Slack or Discord:</b>
-					<span class="text-light">{{data.slack_email}}</span>
+					<span class="text-light">{{formData.slack_email}}</span>
 				</div>
 				{% endif %}
-				{% if data.twitter %}
+				{% if formData.twitter %}
 				<div class="col-md-6 col-xs-12">
 					<b>My twitter handle:</b>
-					<span class="text-light">{{data.twitter}}</span>
+					<span class="text-light">{{formData.twitter}}</span>
 				</div>
 				{% endif %}
 			</div>
 			{% endif %}
 
-			{% if data.comments %}
+			{% if formData.comments %}
 			<div class="row">
 				<div class="col-md-12 col-xs-12">
 					<b>Comments:</b>
-					<span class="text-light">{{data.comments|raw}}</span>
+					<span class="text-light">{{formData.comments|raw}}</span>
 				</div>
 			</div>
 			{% endif %}
@@ -210,10 +208,10 @@ function onStart()
 					<span class="text-light">-{{early_discount}} &euro;</span>
 					{% endif %}
 				</div>
-				{% if data.discount_code %}
+				{% if formData.discount_code %}
 				<div class="col-md-6 col-xs-12">
 					<b>Members code:</b>
-					<span class="text-light">{{data.discount_code}}</span>
+					<span class="text-light">{{formData.discount_code}}</span>
 					{% if code_discount %}
 					<br />
 					<em>{{code_msg}}</em>:
@@ -223,15 +221,15 @@ function onStart()
 				{% endif %}
 			</div>
 
-			{% if data.accompanying_person %}
+			{% if formData.accompanying_person %}
 			<div class="row">
 				<div class="col-md-12 col-xs-12">
 					<b>Accompanying person:</b>
-					<span class="text-light">{% if data.accompanying_person_name %}{{data.accompanying_person_name}}, {% else %}Yes -{% endif %} 135 &euro;</span>
+					<span class="text-light">{% if formData.accompanying_person_name %}{{formData.accompanying_person_name}}, {% else %}Yes -{% endif %} 135 &euro;</span>
 				</div>
 			</div>
 		   	{% endif %}
-			{% if data.accompanying_person_has_invoice %}
+			{% if formData.accompanying_person_has_invoice %}
 			<div class="row">
 				<div class="col-md-12 col-xs-12">
 					<b>I want an extra invoice for the accompanying person:</b>
@@ -239,7 +237,7 @@ function onStart()
 				</div>
 			</div>
 			{% endif %}
-			{% if data.help_others %}
+			{% if formData.help_others %}
 			<div class="row">
 				<div class="col-md-12 col-xs-12">
 					<b>I want to donate funds for those who need support for registration. - 25 &euro;:</b>
@@ -247,7 +245,7 @@ function onStart()
 				</div>
 			</div>
 			{% endif %}
-			{% if data.help_others_has_invoice %}
+			{% if formData.help_others_has_invoice %}
 			<div class="row">
 				<div class="col-md-12 col-xs-12">
 					<b>I want an extra invoice for the donation funds:</b>
@@ -255,70 +253,69 @@ function onStart()
 				</div>
 			</div>
 			{% endif %}
-			{% if data.invoice_email and data.total > 0 %}
+			{% if formData.invoice_email and formData.total > 0 %}
 			<div class="row">
 				<div class="col-md-12 col-xs-12">
 					<b>Payment:</b>
 					<span class="text-light">I need a group invoice (payment due on receipt by Bank card, PayPal)</span>
 				</div>
 			</div>
-				<div class="row">
-					<div class="col-md-12 col-xs-12">
-						<b>List of people who will register and should be added to the same invoice:</b>
-						<span class="text-light">{{data.invoice_group_members|raw}}</span>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-12 col-xs-12">
-						<b>Billing details (company name, VAT number, address, country):</b>
-						<span class="text-light">{{data.billing_details|raw}}</span>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-md-12 col-xs-12">
-						<b>Send invoice to the following email:</b>
-						<span class="text-light">{{data.invoice_email}}</span>
-					</div>
+			<div class="row">
+				<div class="col-md-12 col-xs-12">
+					<b>List of people who will register and should be added to the same invoice:</b>
+					<span class="text-light">{{formData.invoice_group_members|raw}}</span>
 				</div>
 			</div>
+			<div class="row">
+				<div class="col-md-12 col-xs-12">
+					<b>Billing details (company name, VAT number, address, country):</b>
+					<span class="text-light">{{formData.billing_details|raw}}</span>
+				</div>
+			</div>
+			<div class="row">
+					<div class="col-md-12 col-xs-12">
+						<b>Send invoice to the following email:</b>
+						<span class="text-light">{{formData.invoice_email}}</span>
+					</div>
+				</div>
 			{% endif %}
 
 			<p>&nbsp;</p>
 			<ul>
-				{% if data.checkbox_code_of_conduct %}
+				{% if formData.checkbox_code_of_conduct %}
 					<li>I have read the <a href="https://www.tdwg.org/about/code-of-conduct/" target="_blank">Code of Conduct</a> and <a href="https://www.tdwg.org/about/terms-of-use/" target="_blank">Terms of Use</a> and agree to abide by them.</li>
 				{% endif %}
-				{% if data.checkbox_presenting %}
+				{% if formData.checkbox_presenting %}
 					<li>If I am presenting or participating in the conference, I understand the meetings and presentations will be recorded and posted at a future date on the public TDWG YouTube channel.</li>
 				{% endif %}
-				{% if data.checkbox_agree %}
+				{% if formData.checkbox_agree %}
 					<li>I agree to be contacted by event organizers.</li>
 				{% endif %}
-				{% if data.checkbox_media %}
+				{% if formData.checkbox_media %}
 					<li>For any presentation I submit, I am responsible for ensuring all images and media are properly licensed / credited or <a href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank">CC0</a>. (see <a href="https://www.tdwg.org/about/terms-of-use/" target="_blank">Terms of Use</a>)</li>
 				{% endif %}
-				{% if data.checkbox_optional_abstract %}
+				{% if formData.checkbox_optional_abstract %}
 					<li>I plan to submit an abstract.</li>
 				{% endif %}
-				{% if data.checkbox_optional_attend_welcome %}
+				{% if formData.checkbox_optional_attend_welcome %}
 					<li>I plan to attend the Welcome reception on 16 October 2022 (included in the in-person registration fee).</li>
 				{% endif %}
-				{% if data.checkbox_optional_attend_excursion %}
+				{% if formData.checkbox_optional_attend_excursion %}
 					<li>I plan to attend the excursion to Rila Monastery on Wednesday 19 October 2022 (included in the in-person registration fee).</li>
 				{% endif %}
-				{% if data.checkbox_optional_attend_conference %}
+				{% if formData.checkbox_optional_attend_conference %}
 					<li>I plan to attend the conference banquet on Thursday  20 October 2022 (included in the in-person registration fee).</li>
 				{% endif %}
-				{% if data.checkbox_optional_contacted %}
+				{% if formData.checkbox_optional_contacted %}
 					<li>I agree to be contacted by event Supporters post-conference.</li>
 				{% endif %}
-				{% if data.checkbox_optional_understand %}
+				{% if formData.checkbox_optional_understand %}
 					<li>I understand the fee for anyone I add to accompany me covers the welcome reception, excursion to Rila monastery and banquet.</li>
 				{% endif %}
-				{% if data.checkbox_optional_open_session %}
+				{% if formData.checkbox_optional_open_session %}
 					<li>I'm willing to chair /  moderate a general open session at TDWG2022</li>
 				{% endif %}
-				{% if data.checkbox_optional_agree_shared %}
+				{% if formData.checkbox_optional_agree_shared %}
 					<li>I agree for my name, affiliation, and email to be shared after the conference with other attendees</li>
 				{% endif %}
 			</ul>
@@ -328,16 +325,16 @@ function onStart()
 			
 			<div class="row center-xs">
 				<div class="col-xs-12 col-md-6">
-					<a href="/event-register/{{tdwg_id}}/{{data.id}}" class="btn btn-primary">Back</a>
+					<a href="/event-register/{{tdwg_id}}/{{formData.data_id}}" class="btn btn-primary">Back</a>
 						&nbsp;
 					{% if total > 0 %}
-						{% if data.invoice_email %}
-							<a href="javascript:void(0);" onclick="proccedToPayment({{data.id}});" class="btn btn-primary">Finish registraion and add {{total}} &euro; to an extra invoice</a>
+						{% if formData.invoice_email %}
+							<a href="javascript:void(0);" onclick="proccedToPayment({{formData.id}});" class="btn btn-primary">Finish registraion and add {{total}} &euro; to an extra invoice</a>
 						{% else %}
-							<a href="javascript:void(0);" onclick="proccedToPayment({{data.id}});" class="btn btn-primary">Proceed to payment {{total}} &euro;</a>
+							<a href="javascript:void(0);" onclick="proccedToPayment({{formData.id}});" class="btn btn-primary">Proceed to payment {{total}} &euro;</a>
 						{% endif %}
 					{% else %}
-						<a href="javascript:void(0);" onclick="finishRegistration({{data.id}});" class="btn btn-primary">Finish registration</a>
+						<a href="javascript:void(0);" onclick="finishRegistration({{formData.id}});" class="btn btn-primary">Finish registration</a>
 					{% endif %}
 				</div>
 			</div>
