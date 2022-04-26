@@ -101,7 +101,6 @@ public function onExportTDWGAttendees(){
 
 	<table>
 		<tr>
-			<td>ID</td>
 			<td>Name</td>
 			<td>Name tag (first and last names)</td>
 			<td>Affiliation, Position</td>
@@ -116,23 +115,38 @@ public function onExportTDWGAttendees(){
 			<td>Accompanying person</td>
 			<td>Help others</td>
 			<td>Payment</td>
+			<td>Twitter</td>
+			<td>Email when using Slack or Discord</td>
+			<td>I plan to submit an abstract</td>
+			<td>I plan to attend the Welcome reception on 16 October 2022</td>
+			<td>I plan to attend the excursion to Rila Monastery on Wednesday 19 October 2022</td>
+			<td>I plan to attend the conference banquet on Thursday  20 October 2022</td>
+			<td>I agree to be contacted by event Supporters post-conference.</td>
+			<td>I understand the fee for anyone I add to accompany me covers the welcome reception, excursion to Rila monastery and banquet.</td>
+			<td>I'm willing to chair /  moderate a general open session at TDWG2022</td>
+			<td>I agree for my name, affiliation, and email to be shared after the conference with other attendees</td>
 		</tr>
 
 		{% for item in data %}
 
 		<tr>
-			<td>{{item.id}}</td>
 			<td>{{item.prefix}} {{item.first_name}} {{item.middle_name}} {{item.last_name}} {{item.suffix}}</td>
 			<td>{{item.first_name_tag}}</td>
-			<td>{{item.last_name_tag}}, {{item.title}}</td>
+			<td>{{item.last_name_tag}}{% if item.title %}, {{item.title}} {% endif %}</td>
 			<td>{{item.email}}</td>
 			<td>{{item.phone}}</td>
-			<td>{{item.address|striptags}}, {{item.address2|striptags}}, {{item.country_name}}, {{item.city}}, {{item.region}}, {{item.postal_code}}</td>
+			<td>{{item.address|striptags}}
+				{% if item.address2 %}, {{item.address2|striptags}} {% endif %}
+				{% if item.country_name %}, {{item.country_name}}{% endif %}
+				{% if item.city %}, {{item.city}}{% endif %}
+				{% if item.region %}, {{item.region}}{% endif %}
+				{% if item.postal_code %}, {{item.postal_code}}{% endif %}
+			</td>
 			<td>{{item.emergency_contact_name}}, {{item.emergency_contact_phone}}</td>
 			<td title="{{item.comments|striptags}}">{{ item.comments|length > 100 ? item.comments|slice(0, 100)|striptags ~ '...' : item.comments|raw  }}</td>
 			<td>{{item.type}}, {{item.ticket_type}} - {{item.ticket_amaount}} &euro;</td>
 			<td>{{item.discount_code}}</td>
-			<td>{{item.discount}} &euro;</td>
+			<td>{% if item.discount %}{{item.discount}} &euro;{% endif %}</td>
 			<td>{% if item.accompanying_person %}135 &euro;{% endif %}
 				{% if item.accompanying_person_name %}, {{item.accompanying_person_name}}{% endif %}
 				{% if item.accompanying_person_has_invoice %}, extra invoice{% endif %}</td>
@@ -142,15 +156,23 @@ public function onExportTDWGAttendees(){
 			<td>
 				{{item.total}} &euro;<br>
 				{% if item.invoice_email and item.total > 0 %}
-				group invoice
+				extra invoice
 				<p>{{item.invoice_group_members|raw}}</p>
 				<p>{{item.billing_details|raw}}</p>
 				<p>{{item.invoice_email}}</p>
 
 				{% endif %}</td>
-
+			<td>{{item.twitter}}</td>
+			<td>{{item.slack_email}}</td>
+			<td>{% if item.checkbox_optional_abstract %} YES {% else %} NO {% endif %}</td>
+			<td>{% if item.checkbox_optional_attend_welcome%} YES {% else %} NO {% endif %}</td>
+			<td>{% if item.checkbox_optional_attend_excursion%} YES {% else %} NO {% endif %}</td>
+			<td>{% if item.checkbox_optional_attend_conference%} YES {% else %} NO {% endif %}</td>
+			<td>{% if item.checkbox_optional_contacted%} YES {% else %} NO {% endif %}</td>
+			<td>{% if item.checkbox_optional_understand%} YES {% else %} NO {% endif %}</td>
+			<td>{% if item.checkbox_optional_open_session%} YES {% else %} NO {% endif %}</td>
+			<td>{% if item.checkbox_optional_agree_shared%} YES {% else %} NO {% endif %}</td>
 		</tr>
-
 		{% endfor %}
 
 
