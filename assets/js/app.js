@@ -18,11 +18,13 @@ $(document).ready(function() {
 	}
 	var selectedRegistrationRequest = $('#registration_request_field select').val(); // virtual or physical
 	var ticket = $('#discount_options_field select :selected').val();
+	$("#members_code_field").hide(200);
 	if(ticket != 1){
 		$("#members_code_field").hide(200);
 		$('#ticket_type_message').hide(200);
 	}else{
 		$("#members_code_field").show(300);
+		$('#ticket_type_message').hide(200);
 		if(selectedRegistrationRequest == 'physical'){
 			$.request('onCheckEarlyBookingDate', {
 				data: {},
@@ -42,6 +44,7 @@ $(document).ready(function() {
 		$('#accompanying_person_field_container').hide(200);
 		$('#accompanying_person_name_field').hide(200);
 		$('.hide_for_virtual').hide(200);
+		$('#ticket_type_message').hide(200);
 		var newRegistrationType = {
 			"-- Choose --": "",
 		};
@@ -77,6 +80,7 @@ $(document).ready(function() {
 
 	$('#discount_options_field select[name="discount_options"]').change(function(){
 		var inputValue = $(this).val();
+		var selectedRegistrationRequest = $('#registration_request_field select').val();
 		if(inputValue != 1){
 			$("#members_code_field").hide(200);
 			$('#ticket_type_message').hide(200);
@@ -128,8 +132,6 @@ $(document).ready(function() {
 			}else{
 				$("#discount_options_field select option").show();
 				$("#discount_options_field select option[id='ticket_4']").hide();
-				$("#discount_options_field select").val(1);
-				$("#members_code_field").show();
 			}
 		});
 	}
@@ -182,6 +184,17 @@ $(document).ready(function() {
 			$('#accompanying_person_field_container').hide(200);
 			$('#accompanying_person_name_field').hide(200);
 			$('.hide_for_virtual').hide(200);
+			$('#ticket_type_message').hide(200);
+		}else{
+			$.request('onCheckEarlyBookingDate', {
+				data: {},
+			}).then(response => {
+				if(response.result){
+					$('#ticket_type_message').show(300);
+				}else{
+					$('#ticket_type_message').hide(200);
+				}
+			});
 		}
 		$.request('onTicketsList', {
 			data: {
@@ -210,6 +223,7 @@ $(document).ready(function() {
 		$("#accompanying_person_name_field").show();
 	}else{
 		$("#accompanying_person_name_field").hide();
+		$('#accompanying_person_has_invoice_field').prop('checked', false).triggerHandler('click');
 	}
 
 	$("#accompanying_person_field").click(function() {
@@ -217,6 +231,7 @@ $(document).ready(function() {
 			$("#accompanying_person_name_field").show(300);
 		} else {
 			$("#accompanying_person_name_field").hide(200);
+			$('#accompanying_person_has_invoice_field').prop('checked', false).triggerHandler('click'); // Unchecks it
 		}
 	});
 
@@ -227,6 +242,7 @@ $(document).ready(function() {
 		$("#help_others_has_invoice_field_container").show();
 	}else{
 		$("#help_others_has_invoice_field_container").hide();
+		$('#help_others_has_invoice_field').prop('checked', false).triggerHandler('click');
 	}
 
 	$("#help_others_field").click(function() {
@@ -234,6 +250,7 @@ $(document).ready(function() {
 			$("#help_others_has_invoice_field_container").show(300);
 		} else {
 			$("#help_others_has_invoice_field_container").hide(200);
+			$('#help_others_has_invoice_field').prop('checked', false).triggerHandler('click');
 		}
 	});
 
@@ -427,12 +444,12 @@ function onExportTDWGAttendees() {
 
 function submitTDWGForm(e){
 	e.preventDefault();
-	var group_members_list = CKEDITOR.instances['group_members_list'].getData();
-	$('#group_members_list').val(group_members_list);
-	var comments = CKEDITOR.instances['comments'].getData();
-	$('#comments').val(comments);
-	var billing_details = CKEDITOR.instances['billing_details'].getData();
-	$('#billing_details').val(billing_details);
+	var group_members_list_textarea = CKEDITOR.instances['group_members_list_textarea'].getData();
+	$('#group_members_list_textarea').val(group_members_list_textarea);
+	var comments_textarea = CKEDITOR.instances['comments_textarea'].getData();
+	$('#comments_textarea').val(comments_textarea);
+	var billing_details_textarea = CKEDITOR.instances['billing_details_textarea'].getData();
+	$('#billing_details_textarea').val(billing_details_textarea);
 	grecaptcha.ready(function() {
 		grecaptcha.execute('6LcoSYEfAAAAABbxngKDKPmBG8ZhrBT6lrgzsE1z', {action: 'submit'}).then(function(token) {
 			// Add your logic to submit to your backend server here.

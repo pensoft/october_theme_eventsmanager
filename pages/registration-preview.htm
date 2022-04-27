@@ -186,7 +186,7 @@ function onStart()
 				{% endif %}
 				{% if formData.twitter %}
 				<div class="col-md-6 col-xs-12">
-					<b>My twitter handle:</b>
+					<b>My Twitter handle:</b>
 					<span class="text-light">{{formData.twitter}}</span>
 				</div>
 				{% endif %}
@@ -213,7 +213,7 @@ function onStart()
 				</div>
 				{% if formData.discount_code %}
 				<div class="col-md-6 col-xs-12">
-					<b>Members code:</b>
+					<b>Member discount code:</b>
 					<span class="text-light">{{formData.discount_code}}</span>
 					{% if code_discount %}
 					<br />
@@ -296,6 +296,12 @@ function onStart()
 				{% endif %}
 				{% if formData.checkbox_media %}
 					<li>For any presentation I submit, I am responsible for ensuring all images and media are properly licensed / credited or <a href="https://creativecommons.org/publicdomain/zero/1.0/" target="_blank">CC0</a>. (see <a href="https://www.tdwg.org/about/terms-of-use/" target="_blank">Terms of Use</a>)</li>
+				{% endif %}
+				{% if formData.checkbox_received %}
+					<li>I have received and understood the privacy information and have thus been informed about my rights as a data subject. I will not deduce any rights from this consent (e.g. a fee). I can withdraw my consent at any time.</li>
+				{% endif %}
+				{% if formData.checkbox_declare %}
+					<li>I hereby declare that I freely give my explicit consent, that the data collected about me during the registration will be passed to TDWG and Pensoft Publishers for the purpose of organizing the conference.</li>
 				{% endif %}
 				{% if formData.checkbox_optional_abstract %}
 					<li>I plan to submit an abstract.</li>
