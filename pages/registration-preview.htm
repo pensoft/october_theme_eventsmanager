@@ -88,7 +88,7 @@ function onStart()
 				</div>
 			</div>
 			<div class="row">
-				<div class="col-md-3 col-xs-12">
+				<div class="col-md-12 col-xs-12">
 					<b>Name:</b>
 					<span class="text-ligth">{{formData.prefix}} {{formData.first_name}} {{formData.middle_name}} {{formData.last_name}} {{formData.suffix}}</span>
 				</div>
@@ -256,11 +256,12 @@ function onStart()
 				</div>
 			</div>
 			{% endif %}
-			{% if formData.invoice_email and formData.total > 0 %}
+
+			{% if formData.invoice_email and total > 0 %}
 			<div class="row">
 				<div class="col-md-12 col-xs-12">
 					<b>Payment:</b>
-					<span class="text-light">I need a group invoice (payment due on receipt by Bank card, PayPal)</span>
+					<span class="text-light">I need a group invoice or extra invoice, payment due on receipt by Bank card, PayPal</span>
 				</div>
 			</div>
 			<div class="row">
