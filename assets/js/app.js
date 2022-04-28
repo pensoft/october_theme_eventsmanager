@@ -58,12 +58,17 @@ $(document).ready(function() {
 				newRegistrationType[value.name + " - " + value.amount + " " + value.currency] = index + 1;
 			});
 			var $el = $("#discount_options");
+
 			$el.empty(); // remove old options
 			$.each(newRegistrationType, function(key,value) {
 				$el.append($("<option></option>")
 					.attr("value", value)
 					.attr("id", 'ticket_'+value)
 					.text(key));
+				if(ticket == value){
+					$('#ticket_'+value).attr("selected", "selected");
+				}
+
 			});
 		});
 	}
