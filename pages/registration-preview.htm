@@ -20,7 +20,6 @@ function onStart()
 	$data = null;
 	$discount = null;
 	$data = Data::where('data_id', $id)->whereRaw('submission_completed IS NOT TRUE')->first();
-
 	if(!$data){
 		return \Redirect::to('/');
 	}
@@ -228,7 +227,7 @@ function onStart()
 			<div class="row">
 				<div class="col-md-12 col-xs-12">
 					<b>Accompanying person:</b>
-					<span class="text-light">{% if formData.accompanying_person_name %}{{formData.accompanying_person_name}}, {% else %}Yes -{% endif %} 135 &euro;</span>
+					<span class="text-light">{% if formData.accompanying_person_name %}{{formData.accompanying_person_name}}, {% else %}Yes, {% endif %} 135 &euro;</span>
 				</div>
 			</div>
 		   	{% endif %}
@@ -243,8 +242,8 @@ function onStart()
 			{% if formData.help_others %}
 			<div class="row">
 				<div class="col-md-12 col-xs-12">
-					<b>I want to donate funds for those who need support for registration. - 25 &euro;:</b>
-					<span class="text-light">Yes</span>
+					<b>I want to donate funds for those who need support for registration.:</b>
+					<span class="text-light">Yes,  25 &euro;</span>
 				</div>
 			</div>
 			{% endif %}
@@ -253,6 +252,16 @@ function onStart()
 				<div class="col-md-12 col-xs-12">
 					<b>I want an extra invoice for the donation funds:</b>
 					<span class="text-light">Yes</span>
+				</div>
+			</div>
+			{% endif %}
+
+
+			{% if total %}
+			<div class="row">
+				<div class="col-md-12 col-xs-12">
+					<b>Total amount:</b>
+					<span class="text-light">{{total}} &euro;</span>
 				</div>
 			</div>
 			{% endif %}
@@ -330,7 +339,11 @@ function onStart()
 				{% endif %}
 			</ul>
 
+
+
 			<p>&nbsp;</p>
+
+
 
 			
 			<div class="row center-xs">
@@ -339,9 +352,9 @@ function onStart()
 						&nbsp;
 					{% if total > 0 %}
 						{% if formData.invoice_email %}
-							<a href="javascript:void(0);" onclick="proccedToPayment({{formData.id}});" class="btn btn-primary">Finish registraion and add {{total}} &euro; to an extra invoice</a>
+							<a href="javascript:void(0);" onclick="proccedToPayment({{formData.id}});" class="btn btn-primary">Finish registration</a>
 						{% else %}
-							<a href="javascript:void(0);" onclick="proccedToPayment({{formData.id}});" class="btn btn-primary">Proceed to payment {{total}} &euro;</a>
+							<a href="javascript:void(0);" onclick="proccedToPayment({{formData.id}});" class="btn btn-primary">Proceed to payment</a>
 						{% endif %}
 					{% else %}
 						<a href="javascript:void(0);" onclick="finishRegistration({{formData.id}});" class="btn btn-primary">Finish registration</a>

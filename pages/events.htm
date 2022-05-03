@@ -94,6 +94,9 @@ $this['tdwg_id'] = env('TDWG_ID');
 				{% if entry.cover_image %}
 					<div class="col-md-4 col-xs-12">
 						<img class="mr-2 mb-2 float-right" src="{{entry.cover_image.getThumb(500, auto, {'mode': 'crop'})}}" alt="{{entry.title}}">
+						{% if entry.active and entry.id == tdwg_id %}
+							<div class="register mt-2"><a href="{{ 'event-register' | page}}/{{entry.id}}" class="btn btn-primary">Register</a> </div>
+						{% endif %}
 					</div>
 				{% endif %}
 				<div class="col-xs">
