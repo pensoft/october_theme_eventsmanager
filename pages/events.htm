@@ -105,7 +105,13 @@ $this['tdwg_id'] = env('TDWG_ID');
 					</div>
 					<div class="mt-1">
 						{% if entry.organizer %}
-						Organizer: {{ entry.organizer }}
+							{% if entry.id == tdwg_id %}
+								Organizers:
+							{% else %}
+								Organizer:
+							{% endif %}
+
+						 	{{ entry.organizer }}
 						{% endif %}
 
 					</div>
