@@ -164,17 +164,23 @@ function onStart()
 					<span class="text-light">{{formData.postal_code}}</span>
 				</div>
 			</div>
+			{% if formData.emergency_contact_name or formData.emergency_contact_phone %}
 			<div class="row">
+				{% if formData.emergency_contact_name %}
 				<div class="col-md-6 col-xs-12">
 					<b>Emergency contact name:</b>
 					<span class="text-light">{{formData.emergency_contact_name}}</span>
 				</div>
+				{% endif %}
+				{% if formData.emergency_contact_phone %}
 				<div class="col-md-6 col-xs-12">
 			
 					<b>Emergency contact phone:</b>
 					<span class="text-light">{{formData.emergency_contact_phone}}</span>
 				</div>
+				{% endif %}
 			</div>
+			{% endif %}
 			{% if formData.twitter or formData.slack_email %}
 			<div class="row">
 				{% if formData.slack_email %}
