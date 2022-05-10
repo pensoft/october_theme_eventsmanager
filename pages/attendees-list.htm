@@ -18,6 +18,7 @@ use Pensoft\Calendar\Models\Entry;
 use Backend\Facades\BackendAuth;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
+use Pensoft\Tdwgform\AttendeesExport;
 
 function onStart(){
 	$this['tdwg_id'] = env('TDWG_ID');
@@ -82,15 +83,108 @@ public function onExportTDWGAttendees(){
 	$attendeeIdsArr = post('attendee_ids');
 	$eventId = post('event_id');
 	$attendeeIds = implode(',', $attendeeIdsArr);
-	$items = [];
-	$items[0][0] = 'Attendee ID';
+	$attendees = Data::whereIn('id', $attendeeIdsArr)->get();
 
+	$data = $attendees->map(function ($item) {
 
-	$collection = new \October\Rain\Support\Collection($items);
+		$country = Country::where('id', (int)$item->country_id)->first()->toArray();
+		$item->country_name = $country['name'];
+		$ticket = DiscountOptions::where('id', (int)$item->discount_option_id)->first()->toArray();
+		$item->ticket_amaount = $amount = ($item->type == 'virtual') ? $ticket['amount_virtual'] :  $ticket['amount'];
+		$item->ticket_type = $ticket['name'];
+		$item->ap = $ap = (int)$item->accompanying_person ? 135 : 0;
+		$item->help = $help = (int)$item->help_others ? 25 : 0;
 
+		$total = (int)($item->ticket_amaount + $ap + $help);
+
+		$earlyDiscount = 0;
+		if( $item->type == 'physical' && (int)$item->discount_option_id == 1 && Carbon::now() <=  env('EARLY_BOOKING_DATE')){
+			$earlyDiscount += 50;
+		}
+
+		$amount = $amount - $earlyDiscount;
+
+		$codeDiscount = 0;
+		if($item->discount_code){
+			$codeData = Codes::where('code', $item->discount_code)->first();
+			if($codeData){
+				if($codeData->type == '%'){
+					$codeDiscount += ((int)$codeData->value / 100) * $amount;
+				}else{
+					$codeDiscount += (int)$codeData->value;
+				}
+				$amount = $amount - $codeDiscount;
+			}else{
+				$codeDiscount = 0;
+			}
+		}
+
+		$item->total = $amount + $ap + $help;
+		$item->code_discount = $codeDiscount;
+		$item->early_discount = $earlyDiscount;
+
+		return $item;
+	});
+
+	$items = $data->toArray();
+	$exportDataArr = [];
+	foreach($items as $k => $v){
+		$exportDataArr[$k]['id'] = $v['id'];
+		$exportDataArr[$k]['name'] = $v['prefix'].' '.$v['first_name'].' '.$v['middle_name'].' '.$v['last_name'].' '.$v['suffix'];
+		$exportDataArr[$k]['first_name_tag'] = $v['first_name_tag'];
+		$exportDataArr[$k]['last_name_tag'] = $v['last_name_tag'].''.($v['title'] ? ', '.$v['title'] : '');
+		$exportDataArr[$k]['email'] = $v['email'];
+		$exportDataArr[$k]['phone'] = $v['phone'];
+		$exportDataArr[$k]['address'] = strip_tags($v['address']);
+		if($v['address2']){ $exportDataArr[$k]['address'] .= ', '.strip_tags($v['address2']); }
+		if($v['country_name']){ $exportDataArr[$k]['address'] .= ', '.$v['country_name']; }
+		if($v['city']){ $exportDataArr[$k]['address'] .= ', '.$v['city']; }
+		if($v['region']){ $exportDataArr[$k]['address'] .= ', '.$v['region']; }
+		if($v['postal_code']){ $exportDataArr[$k]['address'] .= ', '.$v['postal_code']; }
+
+		$exportDataArr[$k]['emergency_contact'] = $v['emergency_contact_name'].' - '.$v['emergency_contact_phone'];
+		$exportDataArr[$k]['comments'] = strip_tags($v['comments']);
+		$exportDataArr[$k]['ticket'] = $v['type'].' '.$v['ticket_type'].' - '.$v['ticket_amaount'].' EUR';
+		$exportDataArr[$k]['discount_code'] = $v['discount_code'];
+
+		$exportDataArr[$k]['discount'] = '';
+		if($v['early_discount']){ $exportDataArr[$k]['discount'] .= 'Early booking discount: '.$v['early_discount'].' EUR'; }
+		if($v['code_discount']){ $exportDataArr[$k]['discount'] .= 'Code discount: '.$v['code_discount'].' EUR'; }
+
+		$exportDataArr[$k]['ap'] = '';
+		if($v['accompanying_person']){ $exportDataArr[$k]['ap'] .= '135 EUR'; }
+		if($v['accompanying_person_name']){ $exportDataArr[$k]['ap'] .= ', '.$v['accompanying_person_name']; }
+		if($v['accompanying_person_has_invoice']){ $exportDataArr[$k]['ap'] .= ', extra invoice'; }
+
+		$exportDataArr[$k]['help'] = '';
+		if($v['help_others']){ $exportDataArr[$k]['help'] .= ' 25 EUR'; }
+		if($v['help_others_has_invoice']){ $exportDataArr[$k]['help'] .= ', extra invoice'; }
+
+		$exportDataArr[$k]['total'] = $v['total'].' EUR';
+		if($v['invoice_email'] && $v['total'] > 0) {
+		$exportDataArr[$k]['total'] .= ', extra invoice; ' .strip_tags($v['invoice_group_members']).'; '. strip_tags($v['billing_details']).'; '. strip_tags($v['invoice_email']).'; ';
+
+		}
+
+		$exportDataArr[$k]['twitter'] = $v['twitter'];
+		$exportDataArr[$k]['slack_email'] = $v['slack_email'];
+
+		$exportDataArr[$k]['checkbox_optional_abstract'] = ($v['checkbox_optional_abstract'] ? 'YES' : 'NO');
+		$exportDataArr[$k]['checkbox_optional_attend_welcome'] = ($v['checkbox_optional_attend_welcome'] ? 'YES' : 'NO');
+		$exportDataArr[$k]['checkbox_optional_attend_excursion'] = ($v['checkbox_optional_attend_excursion'] ? 'YES' : 'NO');
+		$exportDataArr[$k]['checkbox_optional_attend_conference'] = ($v['checkbox_optional_attend_conference'] ? 'YES' : 'NO');
+		$exportDataArr[$k]['checkbox_optional_contacted'] = ($v['checkbox_optional_contacted'] ? 'YES' : 'NO');
+		$exportDataArr[$k]['checkbox_optional_understand'] = ($v['checkbox_optional_understand'] ? 'YES' : 'NO');
+		$exportDataArr[$k]['checkbox_optional_open_session'] = ($v['checkbox_optional_open_session'] ? 'YES' : 'NO');
+		$exportDataArr[$k]['checkbox_optional_agree_shared'] = ($v['checkbox_optional_agree_shared'] ? 'YES' : 'NO');
+
+	}
+
+	$collection = new \October\Rain\Support\Collection($exportDataArr);
 
 	$r = Excel::raw(new AttendeesExport($collection), \Maatwebsite\Excel\Excel::XLSX);
 	return response()->json(['data'=>base64_encode($r)]);
+
 }
 
 
@@ -104,9 +198,15 @@ public function onExportTDWGAttendees(){
 
 	<h1>{{event.title}}</h1>
 
+	<div id="popupEditFieldForm"></div>
+	<div class="emailAndExport">
+		With selected:
+		<a class="btn btn-warning btn-primary" href="javascript:void(0);" onclick="onExportTDWGAttendees();">Export to Excel</a>
+	</div>
 
 	<table>
 		<tr>
+			<td><input type="checkbox" id="checkAll"> Check all </td>
 			<td>Name</td>
 			<td>Name tag (first and last names)</td>
 			<td>Affiliation, Position</td>
@@ -136,6 +236,7 @@ public function onExportTDWGAttendees(){
 		{% for item in data %}
 
 		<tr>
+			<td><input type="checkbox" name="attendee" data-email="{{item.email}}" data-names="{{item.first_name}} {{item.last_name}}" data-id="{{item.id}}" data-eventid="{{event.id}}"> </td>
 			<td>{{item.prefix}} {{item.first_name}} {{item.middle_name}} {{item.last_name}} {{item.suffix}}</td>
 			<td>{{item.first_name_tag}}</td>
 			<td>{{item.last_name_tag}}{% if item.title %}, {{item.title}} {% endif %}</td>
