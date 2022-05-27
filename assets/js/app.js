@@ -4,7 +4,51 @@ var documentHasScroll = function() {
 };
 
 
+
 $(document).ready(function() {
+
+	$(".btn.btn-primary").click(function (e) {
+
+		var errorElements = document.querySelectorAll('input,select,textarea');
+		for (let index = 0; index < errorElements.length; index++) {
+			const element = errorElements[index];
+
+
+			if ($(element).is(':invalid')) {
+
+				if($(element).attr('type') == 'textarea'){
+					$(element).closest('.field').addClass('red');
+				}else{
+					$(element).addClass('red');
+				}
+				//
+				// console.log('value: '+$(element).val());
+				// console.log('type: '+$(element).attr('type'));
+				// console.log('name: '+$(element).attr('name'));
+
+				if($(element).attr('type') == 'email'){
+					$(element).closest('.field').after('<span class="red-err">Please enter a valid email address</span>');
+				}else if($(element).attr('type') == 'checkbox'){
+					$(element).closest('.field').after('<span class="red-err">Please check this box</span>');
+				}else if($(element).attr('type') == 'radio'){
+					$(element).closest('.field').after('<span class="red-err">Please select one of these options</span>');
+				}else{
+					$(element).closest('.field').after('<span class="red-err">Please fill out this field</span>');
+				}
+
+				$('html, body').animate({
+					scrollTop: $(element).offset().top - 150
+				}, 500);
+				return false; // breaks
+			}else{
+				$(element).closest('.field').removeClass('red');
+				$(element).removeClass('red');
+				$('.red-err').hide();
+			}
+		}
+	});
+
+
 	$('#loading_gif').hide();
 	$('#payment_options').removeClass('red');
 	$("#tdwg_registration_form input, #tdwg_registration_form select, #tdwg_registration_form textarea").blur(function () {
@@ -330,6 +374,8 @@ $(document).ready(function() {
 });
 
 
+
+
 function proccedToPayment(ID){
 	$('#loading_gif').show();
 	$.request('onPaymentProceed', {
@@ -455,6 +501,7 @@ function submitTDWGForm(e){
 	$('#comments_textarea').val(comments_textarea);
 	var billing_details_textarea = CKEDITOR.instances['billing_details_textarea'].getData();
 	$('#billing_details_textarea').val(billing_details_textarea);
+
 	grecaptcha.ready(function() {
 		grecaptcha.execute('6LcoSYEfAAAAABbxngKDKPmBG8ZhrBT6lrgzsE1z', {action: 'submit'}).then(function(token) {
 			// Add your logic to submit to your backend server here.

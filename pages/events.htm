@@ -119,8 +119,12 @@ $this['tdwg_id'] = env('TDWG_ID');
 					<a class="mt-2 button" href="{{ entry.url }}" target="_blank">{{ 'To the event'|_ }}</a>
 					{% endif %}
 
-					{% if entry.active %}
+					{% if entry.active and entry.is_internal == 0 %}
 						<div class="register mt-2"><a href="{{ 'event-register' | page}}/{{entry.id}}" class="btn btn-primary">Register</a> </div>
+					{% endif %}
+
+					{% if entry.active and entry.is_internal == 1 and loggedIn %}
+					<div class="register mt-2"><a href="{{ 'event-register' | page}}/{{entry.id}}" class="btn btn-primary">Register</a> </div>
 					{% endif %}
 
 					<div class="row middle-xs">
