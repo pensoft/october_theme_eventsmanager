@@ -27,11 +27,11 @@ function onStart()
 }
 ?>
 ==
-<script src="https://www.google.com/recaptcha/api.js?render=6LcoSYEfAAAAABbxngKDKPmBG8ZhrBT6lrgzsE1z"></script>
 <div class="container-fluid homepage-jumbotron-background">
 	<div class="container">
 		<div class="row">
 			{% if event_id == tdwg_id %}
+			<script src="https://www.google.com/recaptcha/api.js?render=6LcoSYEfAAAAABbxngKDKPmBG8ZhrBT6lrgzsE1z"></script>
 				<div class="col-xs-12">{% component 'TDWGForm' registration_id=registration_id %}</div>
 			{% else %}
 				<div class="col-xs-12">{% component 'EventsRegisterForm' %}</div>
