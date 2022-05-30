@@ -29,7 +29,7 @@ function onStart(){
 	$data = null;
 	$discount = null;
 	if($id){
-		$completedRegistrations = Data::where('submission_completed', true)->get();
+		$completedRegistrations = Data::where('submission_completed', true)->orderBy('created_at', 'asc')->get();
 		$data = $completedRegistrations->map(function ($item) {
 
 			$country = Country::where('id', (int)$item->country_id)->first()->toArray();
@@ -83,7 +83,7 @@ public function onExportTDWGAttendees(){
 	$attendeeIdsArr = post('attendee_ids');
 	$eventId = post('event_id');
 	$attendeeIds = implode(',', $attendeeIdsArr);
-	$attendees = Data::whereIn('id', $attendeeIdsArr)->get();
+	$attendees = Data::whereIn('id', $attendeeIdsArr)->orderBy('created_at', 'asc')->get();
 
 	$data = $attendees->map(function ($item) {
 
