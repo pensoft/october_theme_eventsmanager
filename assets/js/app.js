@@ -82,11 +82,21 @@ $(document).ready(function() {
 		}
 	}
 
+	var tshirtSelected = $("#add_tshirt_field").is(":checked");
+	if(tshirtSelected){
+		$("#tshirt_type_size_field").show();
+	}else{
+		$("#tshirt_type_size_field").hide();
+	}
+
 	$('#accompanying_person_field_container').show(300);
+	$('#add_tshirt_field_container').show(300);
 
 	if(selectedRegistrationRequest == 'virtual'){
 		$('#accompanying_person_field_container').hide(200);
 		$('#accompanying_person_name_field').hide(200);
+		$('#add_tshirt_field_container').hide(200);
+		$('#tshirt_type_size_field').hide(200);
 		$('.hide_for_virtual').hide(200);
 		$('#ticket_type_message').hide(200);
 		var newRegistrationType = {
@@ -221,6 +231,7 @@ $(document).ready(function() {
 		var selected = $(this).val(); // virtual or physical
 
 		$('#accompanying_person_field_container').show(300);
+		$('#add_tshirt_field_container').show(300);
 		$('.hide_for_virtual').show(300);
 
 		if($('#accompanying_person_field').is(":checked")) {
@@ -229,12 +240,27 @@ $(document).ready(function() {
 			$("#accompanying_person_name_field").hide(200);
 		}
 
+		var tshirtSelected = $("#add_tshirt_field").is(":checked");
+		if(tshirtSelected){
+			$("#tshirt_type_size_field").show();
+		}else{
+			$("#tshirt_type_size_field").hide();
+		}
+
 		if(selected == 'virtual'){
 			$('#accompanying_person_field_container').hide(200);
 			$('#accompanying_person_name_field').hide(200);
+			$('#add_tshirt_field_container').hide(200);
+			$('#tshirt_type_size_field').hide(200);
 			$('.hide_for_virtual').hide(200);
 			$('#ticket_type_message').hide(200);
 		}else{
+			$('#add_tshirt_field_container').show(300);
+			if(tshirtSelected){
+				$("#tshirt_type_size_field").show();
+			}else{
+				$("#tshirt_type_size_field").hide();
+			}
 			$.request('onCheckEarlyBookingDate', {
 				data: {},
 			}).then(response => {
@@ -281,6 +307,14 @@ $(document).ready(function() {
 		} else {
 			$("#accompanying_person_name_field").hide(200);
 			$('#accompanying_person_has_invoice_field').prop('checked', false).triggerHandler('click'); // Unchecks it
+		}
+	});
+
+	$("#add_tshirt_field").click(function() {
+		if($(this).is(":checked")) {
+			$("#tshirt_type_size_field").show(300);
+		} else {
+			$("#tshirt_type_size_field").hide(200);
 		}
 	});
 
@@ -501,7 +535,6 @@ function submitTDWGForm(e){
 	$('#comments_textarea').val(comments_textarea);
 	var billing_details_textarea = CKEDITOR.instances['billing_details_textarea'].getData();
 	$('#billing_details_textarea').val(billing_details_textarea);
-
 	grecaptcha.ready(function() {
 		grecaptcha.execute('6LcoSYEfAAAAABbxngKDKPmBG8ZhrBT6lrgzsE1z', {action: 'submit'}).then(function(token) {
 			// Add your logic to submit to your backend server here.

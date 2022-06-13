@@ -263,6 +263,16 @@ function onStart()
 			{% endif %}
 
 
+			{% if formData.add_tshirt %}
+			<div class="row">
+				<div class="col-md-12 col-xs-12">
+					<b>I want to order a branded TDWG 2022 T-shirt and pay during the conference:</b>
+					<span class="text-light">Yes,  15 &euro;, {{formData.tshirt_type|capitalize}}'s T-shirt, size {{formData.tshirt_size|upper}}</span>
+				</div>
+			</div>
+			{% endif %}
+
+
 			{% if total %}
 			<div class="row">
 				<div class="col-md-12 col-xs-12">

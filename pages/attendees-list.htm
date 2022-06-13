@@ -177,6 +177,7 @@ public function onExportTDWGAttendees(){
 		$exportDataArr[$k]['checkbox_optional_understand'] = ($v['checkbox_optional_understand'] ? 'YES' : 'NO');
 		$exportDataArr[$k]['checkbox_optional_open_session'] = ($v['checkbox_optional_open_session'] ? 'YES' : 'NO');
 		$exportDataArr[$k]['checkbox_optional_agree_shared'] = ($v['checkbox_optional_agree_shared'] ? 'YES' : 'NO');
+		$exportDataArr[$k]['add_tshirt'] = ($v['add_tshirt'] ? 'YES, ' .ucfirst($v['tshirt_type']).'\'s T-shirt, size '.strtoupper($v['tshirt_size']) : 'NO');
 
 	}
 
@@ -230,6 +231,7 @@ public function onExportTDWGAttendees(){
 			<td>I understand the fee for anyone I add to accompany me covers the welcome reception, excursion to Rila monastery and banquet.</td>
 			<td>I'm willing to chair /  moderate a general open session at TDWG2022</td>
 			<td>I agree for my name, affiliation, and email to be shared after the conference with other attendees</td>
+			<td>I want to order a branded TDWG 2022 T-shirt and pay during the conference - 15 EUR</td>
 		</tr>
 
 		{% for item in data %}
@@ -279,6 +281,7 @@ public function onExportTDWGAttendees(){
 			<td>{% if item.checkbox_optional_understand%} YES {% else %} NO {% endif %}</td>
 			<td>{% if item.checkbox_optional_open_session%} YES {% else %} NO {% endif %}</td>
 			<td>{% if item.checkbox_optional_agree_shared%} YES {% else %} NO {% endif %}</td>
+			<td>{% if item.add_tshirt %} YES, {{item.tshirt_type|capitalize}}'s T-shirt, size {{item.tshirt_size|upper}} {% else %} NO {% endif %}</td>
 		</tr>
 		{% endfor %}
 
