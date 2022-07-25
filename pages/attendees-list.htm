@@ -43,7 +43,7 @@ function onStart(){
 			$total = (int)($item->ticket_amaount + $ap + $help);
 
 			$earlyDiscount = 0;
-			if( $item->type == 'physical' && (int)$item->discount_option_id == 1 && Carbon::now() <=  env('EARLY_BOOKING_DATE')){
+			if( $item->type == 'physical' && (int)$item->discount_option_id == 1 && Carbon::createFromFormat('Y-m-d H:i:s', $item->created_at) <=  env('EARLY_BOOKING_DATE')){
 				$earlyDiscount += 50;
 			}
 
@@ -63,7 +63,6 @@ function onStart(){
 					$codeDiscount = 0;
 				}
 			}
-
 			$item->total = $amount + $ap + $help;
 			$item->code_discount = $codeDiscount;
 			$item->early_discount = $earlyDiscount;
@@ -98,7 +97,7 @@ public function onExportTDWGAttendees(){
 		$total = (int)($item->ticket_amaount + $ap + $help);
 
 		$earlyDiscount = 0;
-		if( $item->type == 'physical' && (int)$item->discount_option_id == 1 && Carbon::now() <=  env('EARLY_BOOKING_DATE')){
+		if( $item->type == 'physical' && (int)$item->discount_option_id == 1 && Carbon::createFromFormat('Y-m-d H:i:s', $item->created_at) <=  env('EARLY_BOOKING_DATE')){
 			$earlyDiscount += 50;
 		}
 
