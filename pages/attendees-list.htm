@@ -140,7 +140,7 @@ public function onExportTDWGAttendees(){
 		if($v['city']){ $exportDataArr[$k]['address'] .= ', '.$v['city']; }
 		if($v['region']){ $exportDataArr[$k]['address'] .= ', '.$v['region']; }
 		if($v['postal_code']){ $exportDataArr[$k]['address'] .= ', '.$v['postal_code']; }
-
+        $exportDataArr[$k]['country'] = $v['country_name'];
 		$exportDataArr[$k]['emergency_contact'] = $v['emergency_contact_name'].' - '.$v['emergency_contact_phone'];
 		$exportDataArr[$k]['comments'] = strip_tags($v['comments']);
 		$exportDataArr[$k]['ticket'] = $v['type'].' '.$v['ticket_type'].' - '.$v['ticket_amaount'].' EUR';
@@ -212,6 +212,7 @@ public function onExportTDWGAttendees(){
 			<td>Email</td>
 			<td>Phone</td>
 			<td>Address</td>
+			<td>Country</td>
 			<td>Emergency contact</td>
 			<td>Comments</td>
 			<td>Ticket type</td>
@@ -249,6 +250,7 @@ public function onExportTDWGAttendees(){
 				{% if item.region %}, {{item.region}}{% endif %}
 				{% if item.postal_code %}, {{item.postal_code}}{% endif %}
 			</td>
+            <td>{{item.country_name}}</td>
 			<td>{{item.emergency_contact_name}}, {{item.emergency_contact_phone}}</td>
 			<td title="{{item.comments|striptags}}">{{ item.comments|length > 100 ? item.comments|slice(0, 100)|striptags ~ '...' : item.comments|raw  }}</td>
 			<td>{{item.type}}, {{item.ticket_type}} - {{item.ticket_amaount}} &euro;</td>
