@@ -9,12 +9,17 @@ title = "Event register"
 <?php
 use Pensoft\Tdwgform\Models\Data;
 use Ramsey\Uuid\Uuid;
+use Pensoft\Calendar\Models\Entry;
 
 function onStart()
 {
 	$this['event_id'] = $this->param('event_id');
 	$this['registration_id'] = $id = $this->param('registration_id');
 	$this['tdwg_id'] = env('TDWG_ID');
+$tdwg_is_active = Entry::where('id', env('TDWG_ID'))->where('active', true)->first();
+if(!$tdwg_is_active){
+return \Redirect::to('/');
+}
 	if($this->param('event_id') == env('TDWG_ID')){
 		if($id){
 			$data = Data::where('data_id', $id)->whereRaw('submission_completed IS NOT TRUE')->first();
