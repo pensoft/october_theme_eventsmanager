@@ -36,6 +36,15 @@ security = "all"
     {% framework extras %}
 	{% styles %}
     {% scripts %}
+    
+    <script type="text/javascript">
+      var onloadCallback = function() {
+        grecaptcha.render('recaptcha', {
+          'sitekey' : '6Le9quwqAAAAAEGhTG-XwovQtzrEj3waXsSHZMeP'
+        });
+      };
+    </script>
+    
 </head>
 
 <body>

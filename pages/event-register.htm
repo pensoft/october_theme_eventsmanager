@@ -17,6 +17,11 @@ function onStart()
 	$this['registration_id'] = $id = $this->param('registration_id');
 	$this['tdwg_id'] = env('TDWG_ID');
 	$tdwg_is_active = Entry::where('id', env('TDWG_ID'))->where('active', true)->first();
+ 
+  $event_is_active = Entry::where('id', $this['event_id'])->where('active', true)->first();
+  if(!$event_is_active){
+    return \Redirect::to('/');
+  }
 	
 	if($this->param('event_id') == env('TDWG_ID')){
 		if(!$tdwg_is_active){
@@ -36,11 +41,15 @@ function onStart()
 <div class="container-fluid homepage-jumbotron-background">
 	<div class="container">
 		<div class="row">
+   
 			{% if event_id == tdwg_id %}
-			<script src="https://www.google.com/recaptcha/api.js?render=6LcoSYEfAAAAABbxngKDKPmBG8ZhrBT6lrgzsE1z"></script>
+			  <script src="https://www.google.com/recaptcha/api.js?render=6LcoSYEfAAAAABbxngKDKPmBG8ZhrBT6lrgzsE1z"></script>
 				<div class="col-xs-12">{% component 'TDWGForm' registration_id=registration_id %}</div>
 			{% else %}
+      
 				<div class="col-xs-12">{% component 'EventsRegisterForm' %}</div>
+      
+        <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer></script>
 			{% endif %}
 		</div>
 	</div>
